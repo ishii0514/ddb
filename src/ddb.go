@@ -1,17 +1,19 @@
 package main 
 
 import(
-    "fmt"
     "db"
+	"testing"
 )
 
+
+var tests =[]testing.InternalTest{
+	{"db.TestColumnNumber", db.TestColumnNumber},
+}
+
 func main() {
-    
-    var col1 db.ColumnNumber
-    col1.Set("col1")
-    fmt.Println(col1.Get()) 
-    
-    fmt.Println(db.Get())
-    
+	testing.Main(func(string, string) (bool, error) { return true, nil },
+		tests,
+		[]testing.InternalBenchmark{},
+		[]testing.InternalExample{})
 }
 

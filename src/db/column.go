@@ -4,11 +4,8 @@ import (
 
 )
 
-
 type ColumnNumber struct{
-    name string
+    Name string
 }
-func (p *ColumnNumber) Get() string { return p.name}
-func (p *ColumnNumber) Set(name string) { p.name = name}
-
-func Get() string{return "hello db"}
+func (p *ColumnNumber) Get() string { return p.Name}
+func (p *ColumnNumber) Set(name string) { p.Name = name}
