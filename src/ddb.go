@@ -7,10 +7,10 @@ import(
 
 
 var tests =[]testing.InternalTest{
-	{"db.TestColumnNumber", db.TestColumnNumber},
-	{"db.TestColumnNumberInsert", db.TestColumnNumberInsert},
-	{"db.TestColumnNumberGet", db.TestColumnNumberGet},
-    {"db.TestColumnNumberDeleteAt", db.TestColumnNumberDeleteAt},
+	{"db.TestColumnInteger", db.TestColumnInteger},
+	{"db.TestColumnIntegerInsert", db.TestColumnIntegerInsert},
+	{"db.TestColumnIntegerGet", db.TestColumnIntegerGet},
+    {"db.TestColumnIntegerDeleteAt", db.TestColumnIntegerDeleteAt},
 	
 }
 

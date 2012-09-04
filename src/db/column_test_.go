@@ -5,16 +5,16 @@ import (
 )
 
 
-func TestColumnNumber(t *testing.T) {
-    var col1 ColumnNumber
+func TestColumnInteger(t *testing.T) {
+    var col1 ColumnInteger
     col1.SetName("col1")
     if col1.GetName() != "col1" {
         t.Error("illegal name.")
     }
 }
 
-func TestColumnNumberInsert(t *testing.T) {
-    var col1 ColumnNumber
+func TestColumnIntegerInsert(t *testing.T) {
+    var col1 ColumnInteger
     col1.Insert(1)
     if col1.DataCount() != 1 {
         t.Error("illegal datacount.")
@@ -24,8 +24,8 @@ func TestColumnNumberInsert(t *testing.T) {
         t.Error("illegal datacount.")
     }
 }
-func TestColumnNumberGet(t *testing.T) {
-    var col1 ColumnNumber
+func TestColumnIntegerGet(t *testing.T) {
+    var col1 ColumnInteger
     col1.Insert(2)
     col1.Insert(1)
     if col1.DataCount() != 2 {
@@ -49,8 +49,8 @@ func TestColumnNumberGet(t *testing.T) {
         t.Error("illegal error message.")
     }
 }
-func TestColumnNumberDeleteAt(t *testing.T) {
-    var col1 ColumnNumber
+func TestColumnIntegerDeleteAt(t *testing.T) {
+    var col1 ColumnInteger
     col1.Insert(2)
     col1.Insert(1)
     col1.DeleteAt(1)

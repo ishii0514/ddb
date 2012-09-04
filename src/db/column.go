@@ -1,3 +1,6 @@
+/*
+ dbパッケージ
+*/
 package db
 
 import (
@@ -12,31 +15,42 @@ func (e *DbError) Error() string {
 }
 
 
+//カラムインターフェース
 type Column interface {
 	GetName() string
 	SetName(name string)
 }
 
-type ColumnNumber struct{
+//INT型のカラム
+type ColumnInteger struct{
     name string
     data []int
 }
 
-func (p *ColumnNumber) GetName() string { return p.name}
-func (p *ColumnNumber) SetName(name string) { p.name = name}
-func (p *ColumnNumber) DataCount() int { return len(p.data)}
-func (p *ColumnNumber) Get(row int) (int,error) {
+//カラム名の取得
+func (p *ColumnInteger) GetName() string { return p.name}
+
+//カラム名のセット
+func (p *ColumnInteger) SetName(name string) { p.name = name}
+
+//データ数の取得
+func (p *ColumnInteger) DataCount() int { return len(p.data)}
+
+//指定した行のデータを取得
+func (p *ColumnInteger) Get(row int) (int,error) {
     if row >= p.DataCount(){
         return 0,&DbError{"out of range."}
     }
 	return p.data[row],nil
 }
-func (p *ColumnNumber) Insert(data int) {p.data = append(p.data,data)}
+
+//データ挿入
+func (p *ColumnInteger) Insert(data int) {p.data = append(p.data,data)}
+
 //指定した行のデータを削除する
-func (p *ColumnNumber) DeleteAt(row int) {
+func (p *ColumnInteger) DeleteAt(row int) {
     if row >= p.DataCount(){
         return
     }
     p.data = append(p.data[:row],p.data[row+1:]...)
 }
- 
