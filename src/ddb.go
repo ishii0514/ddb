@@ -8,6 +8,7 @@ import(
 
 var tests =[]testing.InternalTest{
 	{"db.TestColumnNumber", db.TestColumnNumber},
+	{"db.TestColumnNumberInsert", db.TestColumnNumberInsert},
 }
 
 func main() {

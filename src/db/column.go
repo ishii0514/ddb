@@ -1,11 +1,21 @@
 package db
 
 import (
-
 )
 
-type ColumnNumber struct{
-    Name string
+type Column interface {
+	GetName() string
+	SetName(name string)
 }
-func (p *ColumnNumber) Get() string { return p.Name}
-func (p *ColumnNumber) Set(name string) { p.Name = name}
+
+type ColumnNumber struct{
+    name string
+    data []int
+}
+func (p *ColumnNumber) GetName() string { return p.name}
+func (p *ColumnNumber) SetName(name string) { p.name = name}
+func (p *ColumnNumber) Insert(data int) {p.data = append(p.data,data)}
+func (p *ColumnNumber) Get(row int) int {
+	return p.data[row]
+}
+func (p *ColumnNumber) DataCount() int { return len(p.data)} 
