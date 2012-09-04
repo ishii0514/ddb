@@ -9,6 +9,9 @@ import(
 var tests =[]testing.InternalTest{
 	{"db.TestColumnNumber", db.TestColumnNumber},
 	{"db.TestColumnNumberInsert", db.TestColumnNumberInsert},
+	{"db.TestColumnNumberGet", db.TestColumnNumberGet},
+    {"db.TestColumnNumberDeleteAt", db.TestColumnNumberDeleteAt},
+	
 }
 
 func main() {
