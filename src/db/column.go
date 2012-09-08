@@ -18,7 +18,6 @@ func (e *DbError) Error() string {
 //カラムインターフェース
 type Column interface {
 	GetName() string
-	SetName(name string)
 }
 
 //INT型のカラム
@@ -29,9 +28,6 @@ type ColumnInteger struct{
 
 //カラム名の取得
 func (p *ColumnInteger) GetName() string { return p.name}
-
-//カラム名のセット
-func (p *ColumnInteger) SetName(name string) { p.name = name}
 
 //データ数の取得
 func (p *ColumnInteger) DataCount() int { return len(p.data)}
