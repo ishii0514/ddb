@@ -13,8 +13,7 @@ var tests =[]testing.InternalTest{
     {"db.TestColumnIntegerDeleteAt", db.TestColumnIntegerDeleteAt},
     {"db.TestColumnIntegerSearch", db.TestColumnIntegerSearch},
     {"db.TestColumnIntegerSearchNoMatch", db.TestColumnIntegerSearchNoMatch},
-    
-	
+    {"db.TestTableName", db.TestTableName},	
 }
 
 func main() {

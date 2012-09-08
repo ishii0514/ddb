@@ -43,9 +43,10 @@ func (p *ColumnInteger) Get(row int) (int,error) {
 func (p *ColumnInteger) Search(searchValue int) []int {
 	res := make([]int,0)
 	for i, v := range p.data {
-		if v== searchValue {
-			res = append(res,i)
+		if v != searchValue {
+			continue;
 		}
+		res = append(res,i)
 	}
 	return res
 }
