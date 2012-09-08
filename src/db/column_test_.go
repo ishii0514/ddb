@@ -49,6 +49,32 @@ func TestColumnIntegerGet(t *testing.T) {
         t.Error("illegal error message.")
     }
 }
+func TestColumnIntegerSearch(t *testing.T) {
+    var col1 ColumnInteger
+    col1.Insert(1)
+    col1.Insert(2)
+    col1.Insert(1)
+    res := col1.Search(1)
+    if len(res) != 2 {
+        t.Error("illegal result len.")
+    }
+    if res[0] != 0 {
+        t.Error("illegal search.#1")
+    }
+    if res[1] != 2 {
+        t.Error("illegal search. #2")
+    }
+}
+func TestColumnIntegerSearchNoMatch(t *testing.T) {
+    var col1 ColumnInteger
+    col1.Insert(1)
+    col1.Insert(2)
+    col1.Insert(1)
+    res := col1.Search(3)
+    if len(res) != 0 {
+        t.Error("illegal result len.")
+    }
+}
 func TestColumnIntegerDeleteAt(t *testing.T) {
     var col1 ColumnInteger
     col1.Insert(2)

@@ -43,6 +43,16 @@ func (p *ColumnInteger) Get(row int) (int,error) {
     }
 	return p.data[row],nil
 }
+//指定した値の行を返す
+func (p *ColumnInteger) Search(searchValue int) []int {
+	res := make([]int,0)
+	for i, v := range p.data {
+		if v== searchValue {
+			res = append(res,i)
+		}
+	}
+	return res
+}
 
 //データ挿入
 func (p *ColumnInteger) Insert(data int) {p.data = append(p.data,data)}
