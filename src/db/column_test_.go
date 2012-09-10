@@ -7,7 +7,7 @@ import (
 
 func TestColumnInteger(t *testing.T) {
     var col1 = ColumnInteger{name : "col1"}
-    if col1.GetName() != "col1" {
+    if col1.Name() != "col1" {
         t.Error("illegal name.")
     }
 }
