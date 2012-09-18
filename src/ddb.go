@@ -14,7 +14,8 @@ var tests =[]testing.InternalTest{
     {"db.TestColumnIntegerSearch", db.TestColumnIntegerSearch},
     {"db.TestColumnIntegerSearchNoMatch", db.TestColumnIntegerSearchNoMatch},
     {"db.TestTableName", db.TestTableName},	
-    {"db.TestTableInsert0column", db.TestTableInsert0column},	
+    {"db.TestTableInsert0column", db.TestTableInsert0column},
+    {"db.TestgetInsertVaue",db.TestgetInsertVaue},
 }
 
 func main() {
