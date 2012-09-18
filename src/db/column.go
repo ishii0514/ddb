@@ -43,14 +43,10 @@ func (p *ColumnInteger) Get(row int) (int,error) {
 func (p *ColumnInteger) Search(searchValue int) []int {
 	res := make([]int,0)
 	for i, v := range p.data {
-		if v != searchValue {
-			continue;
-		}
-		res = append(res,i)
+		res = appendData(searchValue==v,i,res)
 	}
 	return res
 }
-
 //データ挿入
 func (p *ColumnInteger) Insert(data int) {p.data = append(p.data,data)}
 
@@ -60,4 +56,12 @@ func (p *ColumnInteger) DeleteAt(row int) {
         return
     }
     p.data = append(p.data[:row],p.data[row+1:]...)
+}
+
+//条件に一致したらデータを追加する
+func appendData(isAppend bool ,value int, values []int) []int{
+	if isAppend {
+		values = append(values,value)
+	}
+	return values
 }
