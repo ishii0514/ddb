@@ -91,3 +91,18 @@ func TestColumnIntegerDeleteAt(t *testing.T) {
         t.Error("illegal data delete.")
     }
 }
+
+//文字列挿入のテスト
+func TestColumnInsertByString(t *testing.T) {
+    var col1 ColumnInteger
+    col1.InsertByString("1")
+    col1.InsertByString("nointeger")
+    col1.InsertByString("2")
+
+    if len(col1.Search(1)) != 1 {
+        t.Error("illegal result len.")
+    }
+    if col1.DataCount() != 3{
+    	t.Error("illegal datacount.")
+    }
+}

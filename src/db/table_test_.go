@@ -25,25 +25,17 @@ func TestTableInsert0column(t *testing.T) {
 
 //追加データの判定
 func TestgetInsertVaue(t *testing.T) {
-	//TODO INVALID_DATAを使用する
-	
 	values:= []string{"1", "10","STR"}
 	
 	//２番目の項目
 	res := getInsertVaue(1,&values)
-	if res != 10 {
+	if res != "10" {
         t.Error("illegal insert data.")
     }
     
     //カラム数を超えた場合
     res = getInsertVaue(3,&values)
-	if res != 0 {
-        t.Error("illegal insert data.")
-    }
-    
-    //数値以外のデータ
-    res = getInsertVaue(2,&values)
-	if res != 0 {
+	if res != INVALID_VALUE {
         t.Error("illegal insert data.")
     }
 }

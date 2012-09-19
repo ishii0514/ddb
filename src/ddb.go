@@ -13,6 +13,7 @@ var tests =[]testing.InternalTest{
     {"db.TestColumnIntegerDeleteAt", db.TestColumnIntegerDeleteAt},
     {"db.TestColumnIntegerSearch", db.TestColumnIntegerSearch},
     {"db.TestColumnIntegerSearchNoMatch", db.TestColumnIntegerSearchNoMatch},
+    {"db.TestColumnInsertByString",db.TestColumnInsertByString},
     {"db.TestTableName", db.TestTableName},	
     {"db.TestTableInsert0column", db.TestTableInsert0column},
     {"db.TestgetInsertVaue",db.TestgetInsertVaue},

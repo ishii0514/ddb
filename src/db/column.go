@@ -4,15 +4,8 @@
 package db
 
 import (
-)
 
-//エラー構造体
-type DbError struct {
-    Message string
-}
-func (e *DbError) Error() string {
-    return e.Message
-}
+)
 
 
 //カラムインターフェース
@@ -21,37 +14,42 @@ type Column interface {
 }
 
 //INT型のカラム
+//TODO intをInteger型に置き換え
 type ColumnInteger struct{
     name string
-    data []int
+    data []Integer
 }
 
 //カラム名の取得
 func (p *ColumnInteger) Name() string { return p.name}
 
 //データ数の取得
-func (p *ColumnInteger) DataCount() int { return len(p.data)}
+func (p *ColumnInteger) DataCount() ROWNUM { return ROWNUM(len(p.data))}
 
 //指定した行のデータを取得
-func (p *ColumnInteger) Get(row int) (int,error) {
+func (p *ColumnInteger) Get(row ROWNUM) (Integer,error) {
     if row >= p.DataCount(){
         return 0,&DbError{"out of range."}
     }
 	return p.data[row],nil
 }
-//指定した値の行を返す
-func (p *ColumnInteger) Search(searchValue int) []int {
-	res := make([]int,0)
+
+//指定した値の行リストを返す
+func (p *ColumnInteger) Search(searchValue Integer) []ROWNUM {
+	res := make([]ROWNUM,0)
 	for i, v := range p.data {
-		res = appendData(searchValue==v,i,res)
+		res = appendData(searchValue==v,ROWNUM(i),res)
 	}
 	return res
 }
+
 //データ挿入
-func (p *ColumnInteger) Insert(data int) {p.data = append(p.data,data)}
+func (p *ColumnInteger) Insert(data Integer) {
+	p.data = append(p.data,data)
+}
 
 //指定した行のデータを削除する
-func (p *ColumnInteger) DeleteAt(row int) {
+func (p *ColumnInteger) DeleteAt(row ROWNUM) {
     if row >= p.DataCount(){
         return
     }
@@ -59,9 +57,25 @@ func (p *ColumnInteger) DeleteAt(row int) {
 }
 
 //条件に一致したらデータを追加する
-func appendData(isAppend bool ,value int, values []int) []int{
+//TODO 使われ方が変なのであとでリファクタ
+func appendData(isAppend bool ,value ROWNUM, values []ROWNUM) []ROWNUM{
 	if isAppend {
 		values = append(values,value)
 	}
 	return values
 }
+
+/**
+ * データ挿入　文字列入力
+ * 不正なデータの場合、INVALID_VALUE_INTEGERを挿入する。
+ */
+func (p *ColumnInteger) InsertByString(data string) {
+	//型チェック
+	insertValue := INVALID_VALUE_INTEGER
+	v,err := StringtoInteger(data)
+	if err == nil {
+		insertValue = v			
+    }
+	p.Insert(insertValue)
+}
+
