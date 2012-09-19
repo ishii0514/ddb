@@ -14,7 +14,6 @@ type Column interface {
 }
 
 //INT型のカラム
-//TODO intをInteger型に置き換え
 type ColumnInteger struct{
     name string
     data []Integer
@@ -71,11 +70,21 @@ func appendData(isAppend bool ,value ROWNUM, values []ROWNUM) []ROWNUM{
  */
 func (p *ColumnInteger) InsertByString(data string) {
 	//型チェック
-	insertValue := INVALID_VALUE_INTEGER
-	v,err := StringtoInteger(data)
-	if err == nil {
-		insertValue = v			
-    }
-	p.Insert(insertValue)
+	p.Insert(convertToInteger(data))
 }
 
+// 文字列入力に対して型チェックとコンバートを行う
+// Integer型に変換できない場合、INVALID_VALUE_INTEGERを返す
+func convertToInteger(data string) Integer{
+	//無効値
+	if data == INVALID_VALUE {
+		return INVALID_VALUE_INTEGER
+	}
+	//型変換
+	v,err := StringtoInteger(data)
+	if err == nil {
+		return v
+    }
+    //変換に失敗したら無効値
+    return INVALID_VALUE_INTEGER
+}

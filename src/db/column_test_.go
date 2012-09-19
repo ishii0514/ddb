@@ -106,3 +106,15 @@ func TestColumnInsertByString(t *testing.T) {
     	t.Error("illegal datacount.")
     }
 }
+//データ変換のテスト
+func TestColumnConvertToInteger(t *testing.T) {
+    if convertToInteger(INVALID_VALUE) != INVALID_VALUE_INTEGER {
+        t.Error("illegal convert.#1")
+    }
+    if convertToInteger("999") != 999 {
+        t.Error("illegal convert.#2")
+    }
+    if convertToInteger("helloworld") != INVALID_VALUE_INTEGER {
+        t.Error("illegal convert.#3")
+    }
+}

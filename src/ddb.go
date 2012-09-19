@@ -14,6 +14,7 @@ var tests =[]testing.InternalTest{
     {"db.TestColumnIntegerSearch", db.TestColumnIntegerSearch},
     {"db.TestColumnIntegerSearchNoMatch", db.TestColumnIntegerSearchNoMatch},
     {"db.TestColumnInsertByString",db.TestColumnInsertByString},
+    {"db.TestColumnConvertToInteger",db.TestColumnConvertToInteger},
     {"db.TestTableName", db.TestTableName},	
     {"db.TestTableInsert0column", db.TestTableInsert0column},
     {"db.TestgetInsertVaue",db.TestgetInsertVaue},

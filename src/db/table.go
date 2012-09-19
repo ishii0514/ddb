@@ -2,7 +2,9 @@ package db
 
 import (
 )
-
+//TODO カラムの生成
+//TODO テーブルの生成
+//TODO Insertのテスト
 //テーブル
 type Table struct{
     name string
