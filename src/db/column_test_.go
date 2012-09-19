@@ -118,3 +118,18 @@ func TestColumnConvertToInteger(t *testing.T) {
         t.Error("illegal convert.#3")
     }
 }
+//カラムの作成
+func TestColumnCreateColumn(t *testing.T) {
+	column := createColumn("columnA",COLUMN_TYPE_INTEGER)
+	if column == nil{
+		t.Error("illegal column create.#1")
+	}
+	if column.Name() != "columnA"{
+		t.Error("illegal column create.#2")
+	}
+	
+	column = createColumn("columnA",COLUMN_TYPE_STRING)
+	if column != nil{
+		t.Error("illegal column create.#3")
+	}
+}

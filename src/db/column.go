@@ -11,7 +11,19 @@ import (
 //カラムインターフェース
 type Column interface {
 	Name() string
+	InsertByString(data string)
 }
+//カラムの作成
+func createColumn(columnName string, columnType ColumnType) Column{
+	switch {
+    case columnType == COLUMN_TYPE_INTEGER:
+    	newColumn := ColumnInteger{name : columnName}
+    	return &newColumn
+    }
+    return nil
+}
+
+
 
 //INT型のカラム
 type ColumnInteger struct{

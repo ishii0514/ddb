@@ -2,14 +2,14 @@ package db
 
 import (
 )
-//TODO カラムの生成 ファクトリメソッド
+//TODO テーブルに対して、カラムの追加
 //TODO テーブルの生成 ファクトリメソッド
 //TODO Insertのテスト
 //テーブル
 type Table struct{
     name string
     datacount ROWNUM
-    columns []*ColumnInteger
+    columns []*Column
 }
 
 //テーブル名の取得
@@ -30,7 +30,7 @@ func (p *Table) Insert(values []string) {
 		return
 	}
 	for i, column := range p.columns {
-	    column.InsertByString(getInsertVaue(i,&values))
+	    (*column).InsertByString(getInsertVaue(i,&values))
 	}
 	p.datacount += 1
 }

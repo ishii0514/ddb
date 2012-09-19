@@ -9,7 +9,6 @@ import (
 type Integer int
 //文字列型
 type Varchar string
-
 //文字列をInteger型に変換する
 func StringtoInteger(value string) (Integer,error){
 	v,err := strconv.Atoi(value)
@@ -32,3 +31,10 @@ type DbError struct {
 func (e *DbError) Error() string {
     return e.Message
 }
+
+//カラム型を表す定数
+type ColumnType int
+const (
+	COLUMN_TYPE_INTEGER ColumnType = iota
+	COLUMN_TYPE_STRING  ColumnType = iota
+)
