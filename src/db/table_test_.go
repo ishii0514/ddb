@@ -24,7 +24,7 @@ func TestTableInsert0column(t *testing.T) {
 }
 
 //追加データの判定
-func TestgetInsertVaue(t *testing.T) {
+func TestGetInsertVaue(t *testing.T) {
 	values:= []string{"1", "10","STR"}
 	
 	//２番目の項目
@@ -65,15 +65,20 @@ func TestTableAddcolumns(t *testing.T) {
 }
 
 //insertのテスト 3カラム
-/*
 func TestTableInsert3columns(t *testing.T) {
-    var table1 = createTable(3)
+    table1 := Table{name : "tab1"}
+    table1.AddColumn("col1",COLUMN_TYPE_INTEGER)
+    table1.AddColumn("col2",COLUMN_TYPE_INTEGER)
+    table1.AddColumn("col3",COLUMN_TYPE_INTEGER)
+    
+    
     table1.Insert([]string{"1", "10","100"})
     table1.Insert([]string{"2", "20","200"})
     table1.Insert([]string{"3", "30","300"})
+    table1.Insert([]string{"4", "40","400","4000"})
+    table1.Insert([]string{"5", "str","500"})
     
-    if table1.DataCount() != 3 {
+    if table1.DataCount() != 5 {
         t.Error("illegal data count.")
     }
 }
-*/

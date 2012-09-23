@@ -2,8 +2,10 @@ package db
 
 import (
 )
+//TODO 入ってるデータの確認
+//TODO 一括ロードのインターフェース
 //TODO テーブルの生成 ファクトリメソッド
-//TODO Insertのテスト
+
 //テーブル
 type Table struct{
     name string

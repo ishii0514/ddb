@@ -19,8 +19,9 @@ var tests =[]testing.InternalTest{
     
     {"db.TestTableName", db.TestTableName},	
     {"db.TestTableInsert0column", db.TestTableInsert0column},
-    {"db.TestgetInsertVaue",db.TestgetInsertVaue},
+    {"db.TestGetInsertVaue",db.TestGetInsertVaue},
     {"db.TestTableAddcolumns",db.TestTableAddcolumns},
+    {"db.TestTableInsert3columns",db.TestTableInsert3columns},
 }
 
 func main() {
