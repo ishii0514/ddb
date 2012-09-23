@@ -2,7 +2,6 @@ package db
 
 import (
 )
-//TODO テーブルに対して、カラムの追加
 //TODO テーブルの生成 ファクトリメソッド
 //TODO Insertのテスト
 //テーブル
@@ -43,6 +42,29 @@ func getInsertVaue(columnIndex int,insertValues *[]string) string{
 	}
 	return (*insertValues)[columnIndex]
 }
+/**
+* カラムの追加
+* データ件数が0件の場合のみ
+*/
+func (p *Table) AddColumn(name string,columntype ColumnType) error {
+	if p.DataCount() >0 {
+		//データ既にある場合
+		return &DbError{"data exisits."}
+	}
+	column := createColumn(name,columntype)
+	if column == nil {
+		return &DbError{"add column failed."}
+	}
+	p.columns = append(p.columns,&column)
+	return nil
+}
+/**
+* カラムの数
+*/
+func (p *Table) ColumnCount() int { 
+	return len(p.columns)
+}
+
 //テーブルを生成する
 /*
 func createTable(tablename string,columnNumber int) *Table{

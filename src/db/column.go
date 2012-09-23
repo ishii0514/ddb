@@ -14,7 +14,8 @@ type Column interface {
 	Name() string
 	InsertByString(data string)
 }
-//カラムの作成
+
+//カラムの生成
 func createColumn(columnName string, columnType ColumnType) Column{
 	switch {
     case columnType == COLUMN_TYPE_INTEGER:
@@ -23,7 +24,6 @@ func createColumn(columnName string, columnType ColumnType) Column{
     }
     return nil
 }
-
 
 
 //INT型のカラム

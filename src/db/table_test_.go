@@ -39,6 +39,30 @@ func TestgetInsertVaue(t *testing.T) {
         t.Error("illegal insert data.")
     }
 }
+//カラムの追加
+func TestTableAddcolumns(t *testing.T) {
+    var table1 = Table{name : "tab1"}
+    if table1.ColumnCount() != 0 {
+        t.Error("illegal column count.")
+    }
+    
+    err := table1.AddColumn("col1",COLUMN_TYPE_INTEGER)
+    if err != nil {
+        t.Error("add column failed.#1")
+    }
+    err = table1.AddColumn("col2",COLUMN_TYPE_STRING)
+    if err == nil {
+        t.Error("illegal column added.")
+    }
+    err = table1.AddColumn("col3",COLUMN_TYPE_INTEGER)
+    if err != nil {
+        t.Error("add column failed.#2")
+    }
+    
+    if table1.ColumnCount() != 2 {
+        t.Error("illegal column count.")
+    }
+}
 
 //insertのテスト 3カラム
 /*
