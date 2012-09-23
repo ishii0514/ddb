@@ -10,7 +10,7 @@ import (
 type Table struct{
     name string
     datacount ROWNUM
-    columns []*Column
+    columns []Column
 }
 
 //テーブル名の取得
@@ -31,7 +31,7 @@ func (p *Table) Insert(values []string) {
 	}
 	//カラム毎にinsert
 	for i, column := range p.columns {
-	    (*column).InsertByString(getInsertVaue(i,&values))
+	    column.Insert(getInsertVaue(i,&values))
 	}
 	p.datacount += 1
 }
@@ -57,7 +57,7 @@ func (p *Table) AddColumn(name string,columntype ColumnType) error {
 	if column == nil {
 		return &DbError{"add column failed."}
 	}
-	p.columns = append(p.columns,&column)
+	p.columns = append(p.columns,column)
 	return nil
 }
 /**

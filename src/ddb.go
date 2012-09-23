@@ -7,13 +7,17 @@ import(
 
 
 var tests =[]testing.InternalTest{
+	{"db.TestArrayIntegerInsert",db.TestArrayIntegerInsert},
+	{"db.TestArrayIntegerGet",db.TestArrayIntegerGet},
+	{"db.TestArrayIntegerSearch",db.TestArrayIntegerSearch},
+	{"db.TestArrayIntegerSearchNoMatch",db.TestArrayIntegerSearchNoMatch},
+	
 	{"db.TestColumnInteger", db.TestColumnInteger},
 	{"db.TestColumnIntegerInsert", db.TestColumnIntegerInsert},
 	{"db.TestColumnIntegerGet", db.TestColumnIntegerGet},
-    {"db.TestColumnIntegerDeleteAt", db.TestColumnIntegerDeleteAt},
     {"db.TestColumnIntegerSearch", db.TestColumnIntegerSearch},
     {"db.TestColumnIntegerSearchNoMatch", db.TestColumnIntegerSearchNoMatch},
-    {"db.TestColumnInsertByString",db.TestColumnInsertByString},
+    {"db.TestColumnInsertIllegalData",db.TestColumnInsertIllegalData},
     {"db.TestColumnConvertToInteger",db.TestColumnConvertToInteger},
     {"db.TestColumnCreateColumn",db.TestColumnCreateColumn},
     

@@ -13,20 +13,34 @@ func TestColumnInteger(t *testing.T) {
 }
 
 func TestColumnIntegerInsert(t *testing.T) {
-    var col1 ColumnInteger
-    col1.Insert(1)
+    var col1  = ColumnInteger{name : "col1",data:new(ArrayInteger)}
+    col1.Insert("1")
     if col1.DataCount() != 1 {
         t.Error("illegal datacount.")
     }
-    col1.Insert(1)
+    col1.Insert("1")
     if col1.DataCount() != 2 {
         t.Error("illegal datacount.")
     }
 }
+//文字列INSERTのテスト
+func TestColumnInsertIllegalData(t *testing.T) {
+    var col1  = ColumnInteger{name : "col1",data:new(ArrayInteger)}
+    col1.Insert("1")
+    col1.Insert("nointeger")
+    col1.Insert("2")
+
+    if len(col1.Search(1)) != 1 {
+        t.Error("illegal result len.")
+    }
+    if col1.DataCount() != 3{
+    	t.Error("illegal datacount.")
+    }
+}
 func TestColumnIntegerGet(t *testing.T) {
-    var col1 ColumnInteger
-    col1.Insert(2)
-    col1.Insert(1)
+    var col1  = ColumnInteger{name : "col1",data:new(ArrayInteger)}
+    col1.Insert("2")
+    col1.Insert("1")
     if col1.DataCount() != 2 {
         t.Error("illegal datacount.")
     }
@@ -49,10 +63,10 @@ func TestColumnIntegerGet(t *testing.T) {
     }
 }
 func TestColumnIntegerSearch(t *testing.T) {
-    var col1 ColumnInteger
-    col1.Insert(1)
-    col1.Insert(2)
-    col1.Insert(1)
+    var col1  = ColumnInteger{name : "col1",data:new(ArrayInteger)}
+    col1.Insert("1")
+    col1.Insert("2")
+    col1.Insert("1")
     res := col1.Search(1)
     if len(res) != 2 {
         t.Error("illegal result len.")
@@ -65,47 +79,17 @@ func TestColumnIntegerSearch(t *testing.T) {
     }
 }
 func TestColumnIntegerSearchNoMatch(t *testing.T) {
-    var col1 ColumnInteger
-    col1.Insert(1)
-    col1.Insert(2)
-    col1.Insert(1)
+    var col1  = ColumnInteger{name : "col1",data:new(ArrayInteger)}
+    col1.Insert("1")
+    col1.Insert("2")
+    col1.Insert("1")
     res := col1.Search(3)
     if len(res) != 0 {
         t.Error("illegal result len.")
     }
 }
-func TestColumnIntegerDeleteAt(t *testing.T) {
-    var col1 ColumnInteger
-    col1.Insert(2)
-    col1.Insert(1)
-    col1.DeleteAt(1)
-    if col1.DataCount() != 1 {
-        t.Error("illegal delete.")
-    }
-    
-    val,err := col1.Get(0)
-    if err != nil {
-        t.Error("illegal data get error.")
-    }
-    if val != 2 {
-        t.Error("illegal data delete.")
-    }
-}
 
-//文字列挿入のテスト
-func TestColumnInsertByString(t *testing.T) {
-    var col1 ColumnInteger
-    col1.InsertByString("1")
-    col1.InsertByString("nointeger")
-    col1.InsertByString("2")
 
-    if len(col1.Search(1)) != 1 {
-        t.Error("illegal result len.")
-    }
-    if col1.DataCount() != 3{
-    	t.Error("illegal datacount.")
-    }
-}
 //データ変換のテスト
 func TestColumnConvertToInteger(t *testing.T) {
     if convertToInteger(INVALID_VALUE) != INVALID_VALUE_INTEGER {

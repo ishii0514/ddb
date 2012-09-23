@@ -6,20 +6,20 @@ package db
 import (
 
 )
-
+//TODO delete実装、deleteAtはprivate
 
 //カラムインターフェース
 type Column interface {
 	Type() ColumnType
 	Name() string
-	InsertByString(data string)
+	Insert(data string)
 }
 
 //カラムの生成
 func createColumn(columnName string, columnType ColumnType) Column{
 	switch {
     case columnType == COLUMN_TYPE_INTEGER:
-    	newColumn := ColumnInteger{name : columnName}
+    	newColumn := ColumnInteger{name : columnName,data:new(ArrayInteger)}
     	return &newColumn
     }
     return nil
@@ -29,63 +29,33 @@ func createColumn(columnName string, columnType ColumnType) Column{
 //INT型のカラム
 type ColumnInteger struct{
     name string
-    data []Integer
+    data DataInteger
 }
-
 //カラムタイプ
 func (p *ColumnInteger) Type() ColumnType { return COLUMN_TYPE_INTEGER}
 //カラム名の取得
 func (p *ColumnInteger) Name() string { return p.name}
 
 //データ数の取得
-func (p *ColumnInteger) DataCount() ROWNUM { return ROWNUM(len(p.data))}
+func (p *ColumnInteger) DataCount() ROWNUM { return p.data.DataCount()}
 
 //指定した行のデータを取得
 func (p *ColumnInteger) Get(row ROWNUM) (Integer,error) {
-    if row >= p.DataCount(){
-        return 0,&DbError{"out of range."}
-    }
-	return p.data[row],nil
+    return p.data.Get(row)
 }
 
 //指定した値の行リストを返す
 func (p *ColumnInteger) Search(searchValue Integer) []ROWNUM {
-	res := make([]ROWNUM,0)
-	for i, v := range p.data {
-		res = appendData(searchValue==v,ROWNUM(i),res)
-	}
-	return res
-}
-
-//データ挿入
-func (p *ColumnInteger) Insert(data Integer) {
-	p.data = append(p.data,data)
-}
-
-//指定した行のデータを削除する
-func (p *ColumnInteger) DeleteAt(row ROWNUM) {
-    if row >= p.DataCount(){
-        return
-    }
-    p.data = append(p.data[:row],p.data[row+1:]...)
-}
-
-//条件に一致したらデータを追加する
-//TODO 使われ方が変なのであとでリファクタ
-func appendData(isAppend bool ,value ROWNUM, values []ROWNUM) []ROWNUM{
-	if isAppend {
-		values = append(values,value)
-	}
-	return values
+	return p.data.Search(searchValue)
 }
 
 /**
  * データ挿入　文字列入力
  * 不正なデータの場合、INVALID_VALUE_INTEGERを挿入する。
  */
-func (p *ColumnInteger) InsertByString(data string) {
+func (p *ColumnInteger) Insert(data string) {
 	//型チェック
-	p.Insert(convertToInteger(data))
+	p.data.Insert(convertToInteger(data))
 }
 
 // 文字列入力に対して型チェックとコンバートを行う
