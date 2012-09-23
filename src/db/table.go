@@ -25,10 +25,10 @@ func (p *Table) DataCount() ROWNUM { return p.datacount}
 * カラム数より多い列のデータは無視される。
 */
 func (p *Table) Insert(values []string) {
-	//カラム毎にinsert
 	if len(p.columns) == 0{
 		return
 	}
+	//カラム毎にinsert
 	for i, column := range p.columns {
 	    (*column).InsertByString(getInsertVaue(i,&values))
 	}

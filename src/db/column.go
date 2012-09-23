@@ -10,6 +10,7 @@ import (
 
 //カラムインターフェース
 type Column interface {
+	Type() ColumnType
 	Name() string
 	InsertByString(data string)
 }
@@ -31,6 +32,8 @@ type ColumnInteger struct{
     data []Integer
 }
 
+//カラムタイプ
+func (p *ColumnInteger) Type() ColumnType { return COLUMN_TYPE_INTEGER}
 //カラム名の取得
 func (p *ColumnInteger) Name() string { return p.name}
 
