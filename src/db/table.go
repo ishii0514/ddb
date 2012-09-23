@@ -3,6 +3,8 @@ package db
 import (
 )
 //TODO 入ってるデータの確認
+//TODO 検索
+//TODO データフェッチ
 //TODO 一括ロードのインターフェース
 //TODO テーブルの生成 ファクトリメソッド
 

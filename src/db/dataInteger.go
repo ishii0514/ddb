@@ -3,6 +3,9 @@ package db
 import (
 
 )
+//TODO ベンチマークとれるように、インサート、サーチ
+//TODO 範囲検索
+//TODO delete
 
 //INTEGER型のデータ構造インターフェース
 type DataInteger interface {

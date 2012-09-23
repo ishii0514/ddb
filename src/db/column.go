@@ -54,7 +54,7 @@ func (p *ColumnInteger) Search(searchValue Integer) []ROWNUM {
  * 不正なデータの場合、INVALID_VALUE_INTEGERを挿入する。
  */
 func (p *ColumnInteger) Insert(data string) {
-	//型チェック
+	//型チェックしてインサート
 	p.data.Insert(convertToInteger(data))
 }
 
