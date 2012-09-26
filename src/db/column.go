@@ -6,13 +6,15 @@ package db
 import (
 
 )
-//TODO delete実装、deleteAtはprivate
+//TODO Search
 
 //カラムインターフェース
 type Column interface {
 	Type() ColumnType
 	Name() string
-	Insert(data string)
+	DataCount() ROWNUM
+	Insert(string) ROWNUM
+	Delete(string) ROWNUM
 }
 
 //カラムの生成
@@ -53,10 +55,11 @@ func (p *ColumnInteger) Search(searchValue Integer) []ROWNUM {
  * データ挿入　文字列入力
  * 不正なデータの場合、INVALID_VALUE_INTEGERを挿入する。
  */
-func (p *ColumnInteger) Insert(data string) {
+func (p *ColumnInteger) Insert(data string)  ROWNUM{
 	//型チェックしてインサート
-	p.data.Insert(convertToInteger(data))
+	return p.data.Insert(convertToInteger(data))
 }
+
 
 // 文字列入力に対して型チェックとコンバートを行う
 // Integer型に変換できない場合、INVALID_VALUE_INTEGERを返す
@@ -72,4 +75,15 @@ func convertToInteger(data string) Integer{
     }
     //変換に失敗したら無効値
     return INVALID_VALUE_INTEGER
+}
+/**
+ * データ削除
+ */
+func (p *ColumnInteger) Delete(data string)  ROWNUM{
+	//型チェック
+	v,err := StringtoInteger(data)
+	if err == nil {
+		return p.data.Delete(v)
+    }
+    return 0
 }

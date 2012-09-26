@@ -21,6 +21,8 @@ var tests =[]testing.InternalTest{
     {"db.TestColumnInsertIllegalData",db.TestColumnInsertIllegalData},
     {"db.TestColumnConvertToInteger",db.TestColumnConvertToInteger},
     {"db.TestColumnCreateColumn",db.TestColumnCreateColumn},
+    {"db.TestColumnIntegerDelete",db.TestColumnIntegerDelete},
+    {"db.TestColumnIntegerDeleteIllegalNum",db.TestColumnIntegerDeleteIllegalNum},
     
     {"db.TestTableName", db.TestTableName},	
     {"db.TestTableInsert0column", db.TestTableInsert0column},

@@ -3,7 +3,6 @@ package db
 import (
 
 )
-//TODO delete
 //TODO ベンチマークとれるように、インサート、サーチ
 //TODO 範囲検索
 

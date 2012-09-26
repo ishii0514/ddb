@@ -88,8 +88,65 @@ func TestColumnIntegerSearchNoMatch(t *testing.T) {
         t.Error("illegal result len.")
     }
 }
+//削除
+func TestColumnIntegerDelete(t *testing.T) {
+	col1 := createColumn("columnA",COLUMN_TYPE_INTEGER)
+	col1.Insert("1")
+    col1.Insert("2")
+    col1.Insert("1")
+    col1.Insert("1")
+    if col1.DataCount() != 4 {
+        t.Error("illegal data count.")
+    }
+    
+    //削除
+    delCnt := col1.Delete("1")
+    if col1.DataCount() != 1 {
+        t.Error("illegal delete.")
+    }
+    if delCnt != 3 {
+        t.Error("illegal delete count.")
+    }
+    
+    //削除 該当する値なし
+    delCnt = col1.Delete("1")
+    if col1.DataCount() != 1 {
+        t.Error("illegal no delete.")
+    }
+    if delCnt != 0 {
+        t.Error("illegal no delete count.")
+    }
+}
+//削除
+func TestColumnIntegerDeleteIllegalNum(t *testing.T) {
+	col1 := createColumn("columnA",COLUMN_TYPE_INTEGER)
+	col1.Insert("1")
+    col1.Insert("2")
+    col1.Insert("1")
+    col1.Insert("1")
+    if col1.DataCount() != 4 {
+        t.Error("illegal data count.")
+    }
+    
+    //文字列による削除
+    delCnt := col1.Delete("str")
+    if col1.DataCount() != 4 {
+        t.Error("illegal delete.")
+    }
+    if delCnt != 0 {
+        t.Error("illegal delete count.")
+    }
+    
+    //文字列による削除
+    delCnt = col1.Delete("001")
+    if col1.DataCount() != 1 {
+        t.Error("illegal delete.")
+    }
+    if delCnt != 3 {
+        t.Error("illegal delete count.")
+    }
 
-
+}
 //データ変換のテスト
 func TestColumnConvertToInteger(t *testing.T) {
     if convertToInteger(INVALID_VALUE) != INVALID_VALUE_INTEGER {
@@ -117,3 +174,4 @@ func TestColumnCreateColumn(t *testing.T) {
 		t.Error("illegal column create.#3")
 	}
 }
+
