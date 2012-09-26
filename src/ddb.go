@@ -11,6 +11,7 @@ var tests =[]testing.InternalTest{
 	{"db.TestArrayIntegerGet",db.TestArrayIntegerGet},
 	{"db.TestArrayIntegerSearch",db.TestArrayIntegerSearch},
 	{"db.TestArrayIntegerSearchNoMatch",db.TestArrayIntegerSearchNoMatch},
+	{"db.TestArrayIntegerDelete",db.TestArrayIntegerDelete},
 	
 	{"db.TestColumnInteger", db.TestColumnInteger},
 	{"db.TestColumnIntegerInsert", db.TestColumnIntegerInsert},

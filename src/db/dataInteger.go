@@ -3,16 +3,17 @@ package db
 import (
 
 )
+//TODO delete
 //TODO ベンチマークとれるように、インサート、サーチ
 //TODO 範囲検索
-//TODO delete
 
 //INTEGER型のデータ構造インターフェース
 type DataInteger interface {
 	DataCount() ROWNUM
 	Get(ROWNUM) (Integer,error)
 	Search(Integer) []ROWNUM
-	Insert(Integer)
+	Insert(Integer) ROWNUM
+	Delete(Integer) ROWNUM
 }
 
 //Arry型のデータ構造
@@ -41,6 +42,20 @@ func (p *ArrayInteger) Search(searchValue Integer) []ROWNUM {
 	return res
 }
 //データ挿入
-func (p *ArrayInteger) Insert(data Integer) {
+func (p *ArrayInteger) Insert(data Integer) ROWNUM{
 	p.data = append(p.data,data)
+	return ROWNUM(1)
+}
+//データ削除
+func (p *ArrayInteger) Delete(deleteValue Integer) ROWNUM{
+	rows := p.Search(deleteValue)
+	for i, row := range rows {
+		//削除分を考慮する
+		p.delete(row-ROWNUM(i))
+	}
+	return ROWNUM(len(rows))
+}
+//行を指定してデータ削除
+func (p *ArrayInteger) delete(deleteROW ROWNUM){
+	p.data = append(p.data[:deleteROW],p.data[deleteROW+1:]...)
 }
