@@ -57,4 +57,7 @@ func (p *ArrayInteger) Delete(deleteValue Integer) ROWNUM{
 //行を指定してデータ削除
 func (p *ArrayInteger) delete(deleteROW ROWNUM){
 	p.data = append(p.data[:deleteROW],p.data[deleteROW+1:]...)
+	c := make([]Integer,len(p.data))
+	copy(c,p.data)
+	p.data = c
 }
