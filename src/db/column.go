@@ -13,6 +13,7 @@ type Column interface {
 	Type() ColumnType
 	Name() string
 	DataCount() ROWNUM
+	Search(string) []ROWNUM
 	Insert(string) ROWNUM
 	Delete(string) ROWNUM
 }
@@ -47,8 +48,13 @@ func (p *ColumnInteger) Get(row ROWNUM) (Integer,error) {
 }
 
 //指定した値の行リストを返す
-func (p *ColumnInteger) Search(searchValue Integer) []ROWNUM {
-	return p.data.Search(searchValue)
+func (p *ColumnInteger) Search(searchValue string) []ROWNUM {
+	//型チェック
+	v,err := StringtoInteger(searchValue)
+	if err == nil {
+		return p.data.Search(v)
+    }
+	return []ROWNUM{}
 }
 
 /**

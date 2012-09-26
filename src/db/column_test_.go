@@ -30,7 +30,7 @@ func TestColumnInsertIllegalData(t *testing.T) {
     col1.Insert("nointeger")
     col1.Insert("2")
 
-    if len(col1.Search(1)) != 1 {
+    if len(col1.Search("1")) != 1 {
         t.Error("illegal result len.")
     }
     if col1.DataCount() != 3{
@@ -67,7 +67,7 @@ func TestColumnIntegerSearch(t *testing.T) {
     col1.Insert("1")
     col1.Insert("2")
     col1.Insert("1")
-    res := col1.Search(1)
+    res := col1.Search("1")
     if len(res) != 2 {
         t.Error("illegal result len.")
     }
@@ -83,7 +83,17 @@ func TestColumnIntegerSearchNoMatch(t *testing.T) {
     col1.Insert("1")
     col1.Insert("2")
     col1.Insert("1")
-    res := col1.Search(3)
+    res := col1.Search("3")
+    if len(res) != 0 {
+        t.Error("illegal result len.")
+    }
+}
+func TestColumnIntegerSearchIllegalNum(t *testing.T) {
+    var col1  = ColumnInteger{name : "col1",data:new(ArrayInteger)}
+    col1.Insert("1")
+    col1.Insert("2")
+    col1.Insert("1")
+    res := col1.Search("str")
     if len(res) != 0 {
         t.Error("illegal result len.")
     }

@@ -18,6 +18,7 @@ var tests =[]testing.InternalTest{
 	{"db.TestColumnIntegerGet", db.TestColumnIntegerGet},
     {"db.TestColumnIntegerSearch", db.TestColumnIntegerSearch},
     {"db.TestColumnIntegerSearchNoMatch", db.TestColumnIntegerSearchNoMatch},
+    {"db.TestColumnIntegerSearchIllegalNum",db.TestColumnIntegerSearchIllegalNum},
     {"db.TestColumnInsertIllegalData",db.TestColumnInsertIllegalData},
     {"db.TestColumnConvertToInteger",db.TestColumnConvertToInteger},
     {"db.TestColumnCreateColumn",db.TestColumnCreateColumn},
