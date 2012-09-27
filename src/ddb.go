@@ -32,10 +32,13 @@ var tests =[]testing.InternalTest{
     {"db.TestTableInsert3columns",db.TestTableInsert3columns},
 }
 
+var benchmarks =[]testing.InternalBenchmark{
+//    {"db.BenchmarkArrayIntegerInsert",db.BenchmarkArrayIntegerInsert},
+}
 func main() {
 	testing.Main(func(string, string) (bool, error) { return true, nil },
 		tests,
-		[]testing.InternalBenchmark{},
+		benchmarks,
 		[]testing.InternalExample{})
 }
 

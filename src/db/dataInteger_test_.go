@@ -95,3 +95,5 @@ func TestArrayIntegerDelete(t *testing.T) {
         t.Error("illegal no delete count.")
     }
 }
+
+
