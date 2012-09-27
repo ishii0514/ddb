@@ -33,7 +33,7 @@ var tests =[]testing.InternalTest{
 }
 
 var benchmarks =[]testing.InternalBenchmark{
-	{"db.BenchmarkArrayIntegerInsert",db.BenchmarkArrayIntegerInsert},
+//    {"db.BenchmarkArrayIntegerInsert",db.BenchmarkArrayIntegerInsert},
 }
 func main() {
 	testing.Main(func(string, string) (bool, error) { return true, nil },
