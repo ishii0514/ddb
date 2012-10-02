@@ -3,7 +3,6 @@ package db
 import (
 
 )
-//TODO ベンチマークとれるように、インサート、サーチ
 //TODO 範囲検索
 
 //INTEGER型のデータ構造インターフェース
@@ -40,12 +39,18 @@ func (p *ArrayInteger) Search(searchValue Integer) []ROWNUM {
 	}
 	return res
 }
-//データ挿入
+/**
+ * データ挿入
+ * インサート件数を返す
+ */
 func (p *ArrayInteger) Insert(data Integer) ROWNUM{
 	p.data = append(p.data,data)
 	return ROWNUM(1)
 }
-//データ削除
+/**
+ * データ削除
+ * 削除件数を返す
+ */
 func (p *ArrayInteger) Delete(deleteValue Integer) ROWNUM{
 	rows := p.Search(deleteValue)
 	for i, row := range rows {

@@ -30,6 +30,9 @@ var tests =[]testing.InternalTest{
     {"db.TestGetInsertVaue",db.TestGetInsertVaue},
     {"db.TestTableAddcolumns",db.TestTableAddcolumns},
     {"db.TestTableInsert3columns",db.TestTableInsert3columns},
+    
+    {"db.TestNode",db.TestNode},
+    {"db.TestBtreeLinearSearch",db.TestBtreeLinearSearch},
 }
 
 var benchmarks =[]testing.InternalBenchmark{
