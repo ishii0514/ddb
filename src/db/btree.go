@@ -40,12 +40,15 @@ type nodeValue struct{
 func(p *node) Search(searchValue Integer) []ROWNUM{
     var searchPos int = p.getPositionLinear(searchValue)
 
+    //一致
     if p.values[searchPos].key == searchValue {
     	return p.values[searchPos].rows
     }
+    //子ノード
     if  p.nodes[searchPos] != nil {
         return p.nodes[searchPos].Search(searchValue)
     }
+    //不一致
     return []ROWNUM{}
 }
 
@@ -53,10 +56,12 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
 func(p *node) Insert(insertValue Integer,row ROWNUM){
 	var searchPos int = p.getPositionLinear(insertValue)
 	
+	//一致
     if p.values[searchPos].key == insertValue {
         p.values[searchPos].rows = append(p.values[searchPos].rows,row)
     	return
     }
+    //子ノード
     if  p.nodes[searchPos] != nil {
         p.nodes[searchPos].Insert(insertValue,row)        
         return
@@ -72,7 +77,7 @@ func(p *node) Insert(insertValue Integer,row ROWNUM){
 	    }
 	    p.values[searchPos].key = insertValue
 	    p.values[searchPos].rows = []ROWNUM{row}
-	    p.nodes[searchPos] = nil
+	    p.nodes[searchPos+1] = nil
         return
     }
     //木の分岐
