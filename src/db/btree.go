@@ -68,12 +68,10 @@ func(p *node) Insert(insertValue Integer,row ROWNUM){
     }
    
     //新規データの挿入
-    if p.dataCount < MAX_NODE_NUM {
-        p.insertValue(insertPos,insertValue,row)
-        return
+    p.insertValue(insertPos,insertValue,row)
+    if p.dataCount >= MAX_NODE_NUM {
+        //木の分割
     }
-    //木の分岐
-    
 }
 
 //ノード内の操作対象箇所を検索する
