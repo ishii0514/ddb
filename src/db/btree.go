@@ -38,10 +38,10 @@ type nodeValue struct{
 
 //探索
 func(p *node) Search(searchValue Integer) []ROWNUM{
-    var searchPos int = p.getPositionLinear(searchValue)
+    isMatch,searchPos := p.getPositionLinear(searchValue)
 
     //一致
-    if p.values[searchPos].key == searchValue {
+    if isMatch {
     	return p.values[searchPos].rows
     }
     //子ノード
@@ -54,30 +54,22 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
 
 //挿入
 func(p *node) Insert(insertValue Integer,row ROWNUM){
-	var searchPos int = p.getPositionLinear(insertValue)
+	isMatch,insertPos := p.getPositionLinear(insertValue)
 	
 	//一致
-    if p.values[searchPos].key == insertValue {
-        p.values[searchPos].rows = append(p.values[searchPos].rows,row)
+    if isMatch {
+        p.values[insertPos].rows = append(p.values[insertPos].rows,row)
     	return
     }
     //子ノード
-    if  p.nodes[searchPos] != nil {
-        p.nodes[searchPos].Insert(insertValue,row)        
+    if  p.nodes[insertPos] != nil {
+        p.nodes[insertPos].Insert(insertValue,row)        
         return
     }
    
     //新規データの挿入
     if p.dataCount < MAX_NODE_NUM {
-        //本ノードに挿入
-	    for i:= p.dataCount;i > searchPos;i-- {
-	    	p.values[i].key = p.values[i-1].key
-	    	p.values[i].rows = p.values[i-1].rows
-	    	p.nodes[i+1] = p.nodes[i] 	
-	    }
-	    p.values[searchPos].key = insertValue
-	    p.values[searchPos].rows = []ROWNUM{row}
-	    p.nodes[searchPos+1] = nil
+        p.insertValue(insertPos,insertValue,row)
         return
     }
     //木の分岐
@@ -85,12 +77,29 @@ func(p *node) Insert(insertValue Integer,row ROWNUM){
 }
 
 //ノード内の操作対象箇所を検索する
-func(p *node) getPositionLinear(searchValue Integer) int {
+func(p *node) getPositionLinear(searchValue Integer) (bool,int) {
 	//線形探索
-	for i:=0 ; i< p.dataCount;i++ {
+	var i int =0
+	for ; i< p.dataCount;i++ {
         if p.values[i].key >= searchValue {
-            return i
+            break
         }
     }
-    return p.dataCount;
+    if i == p.dataCount {
+        return false,p.dataCount
+    }
+    return p.values[i].key == searchValue,i
+}
+
+//ノード内に値を挿入する
+func(p *node) insertValue(insertPos int,insertValue Integer,row ROWNUM) {
+    for i:= p.dataCount;i > insertPos;i-- {
+        p.values[i].key = p.values[i-1].key
+        p.values[i].rows = p.values[i-1].rows
+        p.nodes[i+1] = p.nodes[i]   
+    }
+    p.values[insertPos].key = insertValue
+    p.values[insertPos].rows = []ROWNUM{row}
+    p.nodes[insertPos+1] = nil
+    p.dataCount += 1
 }
