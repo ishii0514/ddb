@@ -25,9 +25,13 @@ func(p *BtreeInteger) Insert(insertValue Integer) ROWNUM{
 
 const MAX_NODE_NUM int = 255
 
+//Bツリーのノード
 type node struct{
+    //値
     values [MAX_NODE_NUM]nodeValue
+    //子ノード
     nodes  [MAX_NODE_NUM+1]*node
+    //データ数
     dataCount int
 }
 
@@ -71,6 +75,15 @@ func(p *node) Insert(insertValue Integer,row ROWNUM){
     p.insertValue(insertPos,insertValue,row)
     if p.dataCount >= MAX_NODE_NUM {
         //木の分割
+        //newNode := new(node)
+        devPos := p.dataCount /2
+        //データを映す
+        for i:= devPos ; i<p.dataCount;i++{
+            
+        }
+        //データを初期化する
+        
+        
     }
 }
 
@@ -92,12 +105,19 @@ func(p *node) getPositionLinear(searchValue Integer) (bool,int) {
 //ノード内に値を挿入する
 func(p *node) insertValue(insertPos int,insertValue Integer,row ROWNUM) {
     for i:= p.dataCount;i > insertPos;i-- {
-        p.values[i].key = p.values[i-1].key
-        p.values[i].rows = p.values[i-1].rows
+        p.values[i].insert(p.values[i-1].key,p.values[i-1].rows)
         p.nodes[i+1] = p.nodes[i]   
     }
-    p.values[insertPos].key = insertValue
-    p.values[insertPos].rows = []ROWNUM{row}
+    p.values[insertPos].insert(insertValue,[]ROWNUM{row})
     p.nodes[insertPos+1] = nil
     p.dataCount += 1
+}
+
+/*
+ *データの挿入
+ *
+ */
+func(p *nodeValue) insert(key Integer,rows []ROWNUM){
+        p.key = key
+        p.rows = rows
 }

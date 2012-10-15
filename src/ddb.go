@@ -33,6 +33,8 @@ var tests =[]testing.InternalTest{
     
     {"db.TestNode",db.TestNode},
     {"db.TestBtreeLinearSearch",db.TestBtreeLinearSearch},
+    {"db.TestGetPositionLinear",db.TestGetPositionLinear},
+    {"db.TestInsertValue",db.TestInsertValue},
 }
 
 var benchmarks =[]testing.InternalBenchmark{

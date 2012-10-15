@@ -76,3 +76,85 @@ func TestBtreeLinearSearch(t *testing.T) {
     }
 }
 
+
+func TestGetPositionLinear(t *testing.T) {
+    testNode := node{}
+    testNode.dataCount = 3
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    
+    match,pos := testNode.getPositionLinear(18)
+    if match != true {
+        t.Error("illegal match.18")
+    }
+    if pos != 1 {
+        t.Error("illegal position.18")
+    }
+    
+    match,pos = testNode.getPositionLinear(19)
+    if match != false {
+        t.Error("illegal match.19")
+    }
+    if pos != 2 {
+        t.Error("illegal position.19")
+    }
+    
+    match,pos = testNode.getPositionLinear(40)
+    if match != false {
+        t.Error("illegal match.40")
+    }
+    if pos != 3 {
+        t.Error("illegal position.40")
+    }
+    
+
+}
+
+func TestInsertValue(t *testing.T) {
+    testNode := node{}
+    testNode.dataCount = 3
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    
+    testNode.insertValue(1,10,30)
+    if testNode.dataCount != 4 {
+        t.Error("illegal data count.")
+    }
+    
+    if testNode.values[0].key  != 5 {
+        t.Error("illegal data key.0")
+    }
+    if testNode.values[0].rows[0] != 1 {
+        t.Error("illegal data rows.0")
+    }
+    
+    if testNode.values[1].key  != 10 {
+        t.Error("illegal data key.1")
+    }
+    if testNode.values[1].rows[0] != 30 {
+        t.Error("illegal data rows.1")
+    }
+    
+    if testNode.values[2].key  != 18 {
+        t.Error("illegal data key.2")
+    }
+    if testNode.values[2].rows[0] != 2 {
+        t.Error("illegal data rows.2")
+    }
+    if testNode.values[3].key  != 25 {
+        t.Error("illegal data key.3")
+    }
+    if testNode.values[3].rows[0] != 3 {
+        t.Error("illegal data rows.3")
+    }
+    
+    
+}
