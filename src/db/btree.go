@@ -57,34 +57,58 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
 }
 
 //挿入
-func(p *node) Insert(insertValue Integer,row ROWNUM){
+func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
 	isMatch,insertPos := p.getPositionLinear(insertValue)
 	
+	var returnNode nodeValue
+	var newNode *node =nil
 	//一致
     if isMatch {
         p.values[insertPos].rows = append(p.values[insertPos].rows,row)
-    	return
+    	return returnNode,nil
     }
     //子ノード
     if  p.nodes[insertPos] != nil {
-        p.nodes[insertPos].Insert(insertValue,row)        
-        return
+        returnNode,newNode = p.nodes[insertPos].Insert(insertValue,row)
+        if newNode == nil {
+            //子ノードで分割が無ければリターン
+            return returnNode,nil
+        }
     }
    
+    //TODO 子ノードからの値が返った場合考慮
+    //insertPosも変わる
+    
     //新規データの挿入
-    p.insertValue(insertPos,insertValue,row)
+    p.insertValue(insertPos,insertValue,row,newNode)
     if p.dataCount >= MAX_NODE_NUM {
         //木の分割
-        //newNode := new(node)
+        newNode := new(node)
         devPos := p.dataCount /2
-        //データを映す
-        for i:= devPos ; i<p.dataCount;i++{
+
+        //親ノードに返す値        
+        returnNode = p.values[devPos]
+        //初期化
+        p.values[devPos].insert(0,[]ROWNUM{})
+        //データを移す
+        newNode.nodes[0] = p.nodes[devPos+1]
+        //初期化
+        p.nodes[devPos+1] =nil
+        
+
+        for i,j:= devPos+1, 0 ; i<p.dataCount;i,j = i+1,j+1{
+            newNode.values[j].insert(p.values[i].key,p.values[i].rows)
+            newNode.nodes[j+1] = p.nodes[i+1]
             
+            //初期化
+            p.values[i].insert(0,[]ROWNUM{})
+            p.nodes[i+1] = nil
         }
-        //データを初期化する
         
-        
+        return returnNode,newNode        
     }
+    //分割なし
+    return returnNode,nil
 }
 
 //ノード内の操作対象箇所を検索する
@@ -103,13 +127,13 @@ func(p *node) getPositionLinear(searchValue Integer) (bool,int) {
 }
 
 //ノード内に値を挿入する
-func(p *node) insertValue(insertPos int,insertValue Integer,row ROWNUM) {
+func(p *node) insertValue(insertPos int,insertValue Integer,row ROWNUM,newNode *node) {
     for i:= p.dataCount;i > insertPos;i-- {
         p.values[i].insert(p.values[i-1].key,p.values[i-1].rows)
         p.nodes[i+1] = p.nodes[i]   
     }
     p.values[insertPos].insert(insertValue,[]ROWNUM{row})
-    p.nodes[insertPos+1] = nil
+    p.nodes[insertPos+1] = newNode
     p.dataCount += 1
 }
 
