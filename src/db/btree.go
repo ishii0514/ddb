@@ -96,38 +96,37 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
    
     //新規データの挿入
     p.insertValue(insertPos,newNodeValue,newChildNode)
-    if p.dataCount >= MAX_NODE_NUM {
-        //木の分割
-        newNode := new(node)
-        devPos := p.dataCount /2
-
-        //親ノードに返す値        
-        returnNode := p.values[devPos]
-        //初期化
-        p.values[devPos] = nodeValue{0,[]ROWNUM{}}
-        //データを移す
-        newNode.nodes[0] = p.nodes[devPos+1]
-        //初期化
-        p.nodes[devPos+1] =nil
-        
-
-        for i,j:= devPos+1, 0 ; i<p.dataCount;i,j = i+1,j+1{
-            //データを移す
-            newNode.values[j] = p.values[i]
-            newNode.nodes[j+1] = p.nodes[i+1]
-            
-            //初期化
-            p.values[i] = nodeValue{0,[]ROWNUM{}}
-            p.nodes[i+1] = nil
-        }
-        //データ数
-        newNode.dataCount = p.dataCount - (devPos+1)
-        p.dataCount = devPos 
-        
-        return returnNode,newNode        
+    if p.dataCount < MAX_NODE_NUM {
+        //分割なし
+        return nodeValue{},nil
     }
-    //分割なし
-    return nodeValue{},nil
+    
+    //木の分割
+    newNode := new(node)
+    devPos := p.dataCount /2
+
+    //親ノードに返す値        
+    returnNode := p.values[devPos]
+    //初期化
+    p.values[devPos] = nodeValue{0,[]ROWNUM{}}
+    //データを移す
+    newNode.nodes[0] = p.nodes[devPos+1]
+    //初期化
+    p.nodes[devPos+1] =nil
+    for i,j:= devPos+1, 0 ; i<p.dataCount;i,j = i+1,j+1{
+        //データを移す
+        newNode.values[j] = p.values[i]
+        newNode.nodes[j+1] = p.nodes[i+1]
+            
+        //初期化
+        p.values[i] = nodeValue{0,[]ROWNUM{}}
+        p.nodes[i+1] = nil
+    }
+    //データ数
+    newNode.dataCount = p.dataCount - (devPos+1)
+    p.dataCount = devPos
+    
+    return returnNode,newNode
 }
 
 //ノード内の操作対象箇所を検索する
