@@ -56,40 +56,41 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
     return []ROWNUM{}
 }
 
+//TODO リファクタ
+//TODO ルートノードの分割
 //挿入
 func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
-	isMatch,insertPos := p.getPositionLinear(insertValue)
-	
-	var returnNode nodeValue
-	var newNode *node =nil
+
+  	isMatch,insertPos := p.getPositionLinear(insertValue)
 	//一致
     if isMatch {
         p.values[insertPos].rows = append(p.values[insertPos].rows,row)
-    	return returnNode,nil
+    	return nodeValue{},nil
     }
+    
+    
+    var newNodeValue = nodeValue{key : insertValue,rows : []ROWNUM{row}}
+    var newChildNode *node =nil
     //子ノード
     if  p.nodes[insertPos] != nil {
-        returnNode,newNode = p.nodes[insertPos].Insert(insertValue,row)
-        if newNode == nil {
+        newNodeValue,newChildNode = p.nodes[insertPos].Insert(insertValue,row)
+        if newChildNode == nil {
             //子ノードで分割が無ければリターン
-            return returnNode,nil
+            return nodeValue{},nil
         }
     }
    
-    //TODO 子ノードからの値が返った場合考慮
-    //insertPosも変わる
-    
     //新規データの挿入
-    p.insertValue(insertPos,insertValue,row,newNode)
+    p.insertValue(insertPos,newNodeValue,newChildNode)
     if p.dataCount >= MAX_NODE_NUM {
         //木の分割
         newNode := new(node)
         devPos := p.dataCount /2
 
         //親ノードに返す値        
-        returnNode = p.values[devPos]
+        returnNode := p.values[devPos]
         //初期化
-        p.values[devPos].insert(0,[]ROWNUM{})
+        p.values[devPos] = nodeValue{0,[]ROWNUM{}}
         //データを移す
         newNode.nodes[0] = p.nodes[devPos+1]
         //初期化
@@ -97,18 +98,21 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
         
 
         for i,j:= devPos+1, 0 ; i<p.dataCount;i,j = i+1,j+1{
-            newNode.values[j].insert(p.values[i].key,p.values[i].rows)
+            newNode.values[j] = p.values[i]
             newNode.nodes[j+1] = p.nodes[i+1]
             
             //初期化
-            p.values[i].insert(0,[]ROWNUM{})
+            p.values[i] = nodeValue{0,[]ROWNUM{}}
             p.nodes[i+1] = nil
         }
+        //データ数
+        newNode.dataCount = p.dataCount - (devPos+1)
+        p.dataCount = devPos 
         
         return returnNode,newNode        
     }
     //分割なし
-    return returnNode,nil
+    return nodeValue{},nil
 }
 
 //ノード内の操作対象箇所を検索する
@@ -127,21 +131,12 @@ func(p *node) getPositionLinear(searchValue Integer) (bool,int) {
 }
 
 //ノード内に値を挿入する
-func(p *node) insertValue(insertPos int,insertValue Integer,row ROWNUM,newNode *node) {
+func(p *node) insertValue(insertPos int,insertNodeValue nodeValue,newNode *node) {
     for i:= p.dataCount;i > insertPos;i-- {
-        p.values[i].insert(p.values[i-1].key,p.values[i-1].rows)
+        p.values[i] = p.values[i-1]
         p.nodes[i+1] = p.nodes[i]   
     }
-    p.values[insertPos].insert(insertValue,[]ROWNUM{row})
+    p.values[insertPos] = insertNodeValue
     p.nodes[insertPos+1] = newNode
     p.dataCount += 1
-}
-
-/*
- *データの挿入
- *
- */
-func(p *nodeValue) insert(key Integer,rows []ROWNUM){
-        p.key = key
-        p.rows = rows
 }

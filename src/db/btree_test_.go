@@ -124,7 +124,7 @@ func TestInsertValue(t *testing.T) {
     testNode.values[2].key = 25
     testNode.values[2].rows = []ROWNUM{3,5}
     
-    testNode.insertValue(1,10,30)
+    testNode.insertValue(1,nodeValue{key:10,rows:[]ROWNUM{30}},nil)
     if testNode.dataCount != 4 {
         t.Error("illegal data count.")
     }
