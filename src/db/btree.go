@@ -9,6 +9,11 @@ type BtreeInteger struct{
     rootNode *node
     dataCount ROWNUM
 }
+//BtreeIntegerの生成
+func CreateNewBtree() BtreeInteger {
+    return BtreeInteger{rootNode:new(node),dataCount:0}
+}
+
 //探索
 func(p *BtreeInteger) Search(searchValue Integer) []ROWNUM{
     return p.rootNode.Search(searchValue)
@@ -16,7 +21,17 @@ func(p *BtreeInteger) Search(searchValue Integer) []ROWNUM{
 
 //挿入
 func(p *BtreeInteger) Insert(insertValue Integer) ROWNUM{
-    p.rootNode.Insert(insertValue,p.dataCount)
+    newNodeValue,newChildNode := p.rootNode.Insert(insertValue,p.dataCount)
+    if newChildNode != nil {
+        //ルートノードの分割
+        newRootNode := new(node)
+        newRootNode.values[0] = newNodeValue
+        newRootNode.nodes[0] = p.rootNode
+        newRootNode.nodes[1] = newChildNode
+        newRootNode.dataCount = 1
+        //ルートノードの付け替え
+        p.rootNode = newRootNode
+    }
     p.dataCount += 1
     return ROWNUM(1)
 }
@@ -57,7 +72,6 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
 }
 
 //TODO リファクタ
-//TODO ルートノードの分割
 //挿入
 func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
 
@@ -98,6 +112,7 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
         
 
         for i,j:= devPos+1, 0 ; i<p.dataCount;i,j = i+1,j+1{
+            //データを移す
             newNode.values[j] = p.values[i]
             newNode.nodes[j+1] = p.nodes[i+1]
             

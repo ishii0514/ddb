@@ -155,6 +155,4 @@ func TestInsertValue(t *testing.T) {
     if testNode.values[3].rows[0] != 3 {
         t.Error("illegal data rows.3")
     }
-    
-    
 }
