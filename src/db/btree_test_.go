@@ -156,3 +156,10 @@ func TestInsertValue(t *testing.T) {
         t.Error("illegal data rows.3")
     }
 }
+
+func TestInsert(t *testing.T) {
+    testNode := node{}
+    if testNode.values[3].key  != 25 {
+        t.Error("illegal data key.3")
+    }
+}
