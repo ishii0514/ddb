@@ -159,7 +159,7 @@ func createNewNode(srcNode *node,devidePosition int) *node {
     return newNode
 }
 
-//ノード内の操作対象箇所を検索する
+//ノード内の操作対象箇所を線形検索する
 func(p *node) getPositionLinear(searchValue Integer) (bool,int) {
 	//線形探索
 	var i int =0
