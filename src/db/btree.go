@@ -111,7 +111,6 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
 /*
  *ノードを分割する
  */
- //TODO テスト
 func(p *node) devideNode(devidePosition int) (nodeValue,*node){
     //新規ノードの生成
     newNode := createNewNode(p,devidePosition)
@@ -129,7 +128,6 @@ func(p *node) devideNode(devidePosition int) (nodeValue,*node){
 /*
  * 指定ポジション以降を初期化
  */
- //TODO テスト
 func(p *node) clear(devidePosition int) {
     for i:= devidePosition ; i<p.dataCount;i= i+1{            
         //初期化

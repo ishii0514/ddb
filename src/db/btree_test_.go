@@ -263,3 +263,67 @@ func TestClear(t *testing.T) {
     }
     
 }
+
+func TestDevideNode(t *testing.T) {
+    testNode := node{}
+    testNode.dataCount = 4
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    testNode.values[3].key = 40
+    testNode.values[3].rows = []ROWNUM{6,8,10}
+    cnode0 := new(node)
+    cnode1 := new(node)
+    cnode2 := new(node)
+    cnode3 := new(node)
+    cnode4 := new(node)
+    testNode.nodes[0] = cnode0
+    testNode.nodes[1] = cnode1
+    testNode.nodes[2] = cnode2
+    testNode.nodes[3] = cnode3
+    testNode.nodes[4] = cnode4
+    
+    returnNodeValue,newNode := testNode.devideNode(2)
+    if returnNodeValue.key != 25 {
+        t.Error("illegal returnNodeValue.key")
+    }
+    if len(returnNodeValue.rows) != 2 {
+        t.Error("illegal returnNodeValue.rows")
+    }
+    
+    //旧ノード
+    if testNode.dataCount != 2 {
+        t.Error("illegal testNode dataCount")
+    }
+    if testNode.values[1].key != 18 {
+        t.Error("illegal testNode [1]")
+    }
+    if testNode.values[2].key !=  0 {
+        t.Error("illegal testNode [2]")
+    }
+    
+    //新規ノード
+    if newNode.dataCount != 1 {
+        t.Error("illegal newNode dataCount")
+    }
+    if newNode.values[0].key != 40 {
+        t.Error("illegal newtNode [0]")
+    }
+    if len(newNode.values[0].rows) != 3 {
+        t.Error("illegal newtNode rows[0]")
+    }
+    
+    if newNode.values[1].key !=  0 {
+        t.Error("illegal newNode [1]")
+    }
+    if newNode.values[1].rows != nil {
+        t.Error("illegal newtNode rows[1]")
+    }
+    
+
+    
+    
+}

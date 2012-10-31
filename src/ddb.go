@@ -37,6 +37,7 @@ var tests =[]testing.InternalTest{
     {"db.TestInsertValue",db.TestInsertValue},
     {"db,TestCreateNewNode",db.TestCreateNewNode},
     {"db.TestClear",db.TestClear},
+    {"db.TestDevideNode",db.TestDevideNode},
 }
 
 var benchmarks =[]testing.InternalBenchmark{
