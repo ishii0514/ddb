@@ -33,7 +33,6 @@ func(p *BtreeInteger) Insert(insertValue Integer) ROWNUM{
 /*
  * 新規ルートノードの生成
  */
- //TODO テスト
 func createNewRoot(newNodeValue nodeValue,rootNode *node,newChildNode *node) *node{
 	newRootNode := new(node)
     newRootNode.values[0] = newNodeValue

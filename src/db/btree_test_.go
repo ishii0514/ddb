@@ -322,8 +322,71 @@ func TestDevideNode(t *testing.T) {
     if newNode.values[1].rows != nil {
         t.Error("illegal newtNode rows[1]")
     }
-    
 
+}
+func TestCreateNewRoot(t *testing.T) {
+    testNode := node{}
+    testNode.dataCount = 4
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    testNode.values[3].key = 40
+    testNode.values[3].rows = []ROWNUM{6,8,10}
+    cnode0 := new(node)
+    cnode1 := new(node)
+    cnode2 := new(node)
+    cnode3 := new(node)
+    cnode4 := new(node)
+    testNode.nodes[0] = cnode0
+    testNode.nodes[1] = cnode1
+    testNode.nodes[2] = cnode2
+    testNode.nodes[3] = cnode3
+    testNode.nodes[4] = cnode4
     
+    newRightNode := node{}
+    newRightNode.dataCount = 1
+    newRightNode.values[0].key = 50
+    newRightNode.values[0].rows = []ROWNUM{12}
+    cnode00 := new(node)
+    cnode01 := new(node)
+    newRightNode.nodes[0] = cnode00
+    newRightNode.nodes[1] = cnode01
     
+    newNodeValue := nodeValue{key:48,rows: []ROWNUM{100}}
+    
+    newRoot := createNewRoot(newNodeValue,&testNode,&newRightNode)
+    
+    //rootnode
+    if newRoot.dataCount != 1 {
+        t.Error("illegal newRoot dataCount")
+    }
+    if newRoot.values[0].key != 48 {
+        t.Error("illegal newtNode [0]")
+    }
+    if len(newRoot.values[0].rows) != 1 {
+        t.Error("illegal newtNode rows[0]")
+    }
+    if newRoot.nodes[0] == nil {
+        t.Error("illegal newtNode nodes[0]")
+    }
+    if newRoot.nodes[1] == nil {
+        t.Error("illegal newtNode nodes[1]")
+    }
+    if newRoot.nodes[2] != nil {
+        t.Error("illegal newtNode nodes[2]")
+    }
+    
+    //leftnode
+    if newRoot.nodes[0].dataCount != 4 {
+        t.Error("illegal leftNode dataCount")
+    }
+    if newRoot.nodes[0].values[0].key != 5 {
+        t.Error("illegal leftNode [0]")
+    }
+    if len(newRoot.nodes[0].values[0].rows) != 1 {
+        t.Error("illegal leftNode rows[0]")
+    }
 }

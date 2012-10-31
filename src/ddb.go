@@ -38,6 +38,7 @@ var tests =[]testing.InternalTest{
     {"db,TestCreateNewNode",db.TestCreateNewNode},
     {"db.TestClear",db.TestClear},
     {"db.TestDevideNode",db.TestDevideNode},
+    {"db.TestCreateNewRoot",db.TestCreateNewRoot},
 }
 
 var benchmarks =[]testing.InternalBenchmark{
