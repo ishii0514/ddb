@@ -390,3 +390,58 @@ func TestCreateNewRoot(t *testing.T) {
         t.Error("illegal leftNode rows[0]")
     }
 }
+
+func TestShow(t *testing.T) {
+    testNode := node{}
+    testNode.dataCount = 4
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    testNode.values[3].key = 40
+    testNode.values[3].rows = []ROWNUM{6,8,10}
+    
+    cnode0 := new(node)
+    cnode0.dataCount = 2
+    cnode0.values[0].key = 50
+    cnode0.values[0].rows = []ROWNUM{12}
+    cnode0.values[1].key = 60
+    cnode0.values[1].rows = []ROWNUM{13,14}
+    
+    cnode1 := new(node)
+    cnode1.dataCount = 2
+    cnode1.values[0].key = 70
+    cnode1.values[0].rows = []ROWNUM{21}
+    cnode1.values[1].key = 80
+    cnode1.values[1].rows = []ROWNUM{22,23}
+    
+    cnode2 := new(node)
+    cnode3 := new(node)
+    cnode4 := new(node)
+    testNode.nodes[0] = cnode0
+    testNode.nodes[1] = cnode1
+    testNode.nodes[2] = cnode2
+    testNode.nodes[3] = cnode3
+    testNode.nodes[4] = cnode4
+    
+    cnode10 := new(node)
+    cnode10.dataCount = 2
+    cnode10.values[0].key = 91
+    cnode10.values[0].rows = []ROWNUM{12}
+    cnode10.values[1].key = 92
+    cnode0.values[1].rows = []ROWNUM{13,14}
+    
+    cnode11 := new(node)
+    cnode11.dataCount = 2
+    cnode11.values[0].key = 93
+    cnode11.values[0].rows = []ROWNUM{21}
+    cnode11.values[1].key = 94
+    cnode11.values[1].rows = []ROWNUM{22,23}
+    
+    cnode1.nodes[0] = cnode10
+    cnode1.nodes[1] = cnode11
+    
+    testNode.show()
+}
