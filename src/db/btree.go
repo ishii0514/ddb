@@ -120,7 +120,7 @@ func(p *node) devideNode(devidePosition int) (nodeValue,*node){
     returnNodeValue := p.values[devidePosition] 
     
     //元ノードの初期化
-    p.crear(devidePosition)
+    p.clear(devidePosition)
    
     return returnNodeValue,newNode
 
@@ -130,10 +130,10 @@ func(p *node) devideNode(devidePosition int) (nodeValue,*node){
  * 指定ポジション以降を初期化
  */
  //TODO テスト
-func(p *node) crear(devidePosition int) {
+func(p *node) clear(devidePosition int) {
     for i:= devidePosition ; i<p.dataCount;i= i+1{            
         //初期化
-        p.values[i] = nodeValue{0,[]ROWNUM{}}
+        p.values[i] = nodeValue{0,nil}
         p.nodes[i+1] = nil
     }
     //データ数
@@ -144,7 +144,6 @@ func(p *node) crear(devidePosition int) {
  *新たなノードの生成
  * srcノードの指定ポジション以降をコピー
  */
- //TODO テスト
 func createNewNode(srcNode *node,devidePosition int) *node {
     //木の分割
     newNode := new(node)

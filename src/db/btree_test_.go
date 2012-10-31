@@ -208,6 +208,58 @@ func TestCreateNewNode(t *testing.T) {
     if newNode.nodes[2] != nil {
         t.Error("illegal data nodes[2]")
     }
+   
+}
+func TestClear(t *testing.T) {
+    testNode := node{}
+    testNode.dataCount = 3
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    cnode0 := new(node)
+    cnode1 := new(node)
+    cnode2 := new(node)
+    cnode3 := new(node)
+    testNode.nodes[0] = cnode0
+    testNode.nodes[1] = cnode1
+    testNode.nodes[2] = cnode2
+    testNode.nodes[3] = cnode3
     
-
+    testNode.clear(1)
+    if testNode.dataCount  != 1 {
+        t.Error("illegal data count.")
+    }
+    
+    if testNode.dataCount  != 1 {
+        t.Error("illegal data count.")
+    }
+    if testNode.values[0].key  != 5 {
+        t.Error("illegal data key[0].")
+    }
+    if testNode.values[1].key  != 0 {
+        t.Error("illegal data key[1].")
+    }
+    if testNode.values[0].rows == nil {
+        t.Error("illegal data rows[0]")
+    }
+    if testNode.values[1].rows != nil {
+        t.Error("illegal data rows[1]")
+    }
+    
+    //nodes 0番目
+    if testNode.nodes[0] == nil {
+        t.Error("illegal data nodes[0]")
+    }
+    //nodes 0番目
+    if testNode.nodes[1] == nil {
+        t.Error("illegal data nodes[1]")
+    }
+    //nodes 0番目
+    if testNode.nodes[2] != nil {
+        t.Error("illegal data nodes[2]")
+    }
+    
 }
