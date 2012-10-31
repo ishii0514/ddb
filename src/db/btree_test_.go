@@ -157,9 +157,57 @@ func TestInsertValue(t *testing.T) {
     }
 }
 
-func TestInsert(t *testing.T) {
+func TestCreateNewNode(t *testing.T) {
     testNode := node{}
-    if testNode.values[3].key  != 25 {
-        t.Error("illegal data key.3")
+    testNode.dataCount = 3
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    cnode0 := new(node)
+    cnode1 := new(node)
+    cnode2 := new(node)
+    cnode3 := new(node)
+    testNode.nodes[0] = cnode0
+    testNode.nodes[1] = cnode1
+    testNode.nodes[2] = cnode2
+    testNode.nodes[3] = cnode3
+    
+    newNode := createNewNode(&testNode,1)
+    if newNode.dataCount  != 1 {
+        t.Error("illegal data count.")
     }
+    
+    //values 0番目
+    if newNode.values[0].key != 25 {
+        t.Error("illegal data key[0]")
+    }
+    if newNode.values[0].rows[0] != 3 {
+        t.Error("illegal data rows[0]")
+    }
+    
+    //values 1番目
+    if newNode.values[1].key != 0 {
+        t.Error("illegal data key[1]")
+    }
+    if newNode.values[1].rows != nil {
+        t.Error("illegal data rows[1]")
+    }
+    
+    //nodes 0番目
+    if newNode.nodes[0] == nil {
+        t.Error("illegal data nodes[0]")
+    }
+    //nodes 0番目
+    if newNode.nodes[1] == nil {
+        t.Error("illegal data nodes[1]")
+    }
+    //nodes 0番目
+    if newNode.nodes[2] != nil {
+        t.Error("illegal data nodes[2]")
+    }
+    
+
 }

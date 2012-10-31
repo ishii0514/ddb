@@ -153,9 +153,8 @@ func createNewNode(srcNode *node,devidePosition int) *node {
         //データを移す
         newNode.values[j] = srcNode.values[i]
         newNode.nodes[j+1] = srcNode.nodes[i+1]
-    }
-    newNode.dataCount = srcNode.dataCount - (devidePosition+1)
-    
+        newNode.dataCount +=1
+    }    
     return newNode
 }
 
