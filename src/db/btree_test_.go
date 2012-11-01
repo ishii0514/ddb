@@ -443,5 +443,23 @@ func TestShow(t *testing.T) {
     cnode1.nodes[0] = cnode10
     cnode1.nodes[1] = cnode11
     
-    testNode.show()
+    res := testNode.show()
+    
+    exp := "[5,18,25,40,]\n"
+    exp += "-[50,60,]\n"
+    exp += "-[70,80,]\n"
+    exp += "--[91,92,]\n"
+    exp += "--[93,94,]\n"
+    exp += "-[]\n"
+    exp += "-[]\n"
+    exp += "-[]\n"
+    //print(res)
+    if res != exp {
+        t.Error("illegal show")
+    }
+}
+
+func TestInsert(t *testing.T) {
+    
+
 }

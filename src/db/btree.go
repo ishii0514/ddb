@@ -1,8 +1,9 @@
 package db
 
 import (
-    "fmt"
+    //"fmt"
     "strings"
+    "strconv"
 )
 
 //Bteeデータ構造
@@ -182,21 +183,25 @@ func(p *node) insertValue(insertPos int,insertNodeValue nodeValue,newNode *node)
 }
 
 //ノード内の状態を出力する
-func(p *node) show() {
-    p.showPadding(0)
+func(p *node) show() string {
+    return p.showPadding(0)
 }
-func(p *node) showPadding(pad int) {
+func(p *node) showPadding(pad int) string {
+    res := ""
     padding := strings.Repeat("-", pad)
-    fmt.Printf("%s[",padding)
+    
+    res += padding + "["
+    //fmt.Printf("%s[",padding)
     for i:= 0;i < p.dataCount;i++ {
-        fmt.Printf("%d,",p.values[i].key)
+        res += strconv.Itoa(int(p.values[i].key)) + ","
     }
-    fmt.Printf("]\n")
+    res += "]\n"
     
     //子ノード
     for i:= 0;i < p.dataCount+1;i++ {
         if p.nodes[i] != nil {
-            p.nodes[i].showPadding(pad+1)
+            res += p.nodes[i].showPadding(pad+1)
         }
     }
+    return res
 }
