@@ -16,13 +16,26 @@ func CreateNewBtree() BtreeInteger {
     return BtreeInteger{rootNode:new(node),dataCount:0}
 }
 
+//データ数
+func(p *BtreeInteger) DataCount() ROWNUM{
+    return p.dataCount
+}
+
+//行指定（ダミー）
+func(p *BtreeInteger) Get(row ROWNUM) (Integer,error){
+    return 0,nil
+}
+
+//探索
+func(p *BtreeInteger) show() string{
+    return p.rootNode.show()
+}
 //探索
 func(p *BtreeInteger) Search(searchValue Integer) []ROWNUM{
     return p.rootNode.Search(searchValue)
 }
 
 //挿入
-//TODO テスト
 func(p *BtreeInteger) Insert(insertValue Integer) ROWNUM{
     newNodeValue,newChildNode := p.rootNode.Insert(insertValue,p.dataCount)
     if newChildNode != nil {
@@ -77,7 +90,7 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
     return []ROWNUM{}
 }
 
-//TODO テスト
+
 //挿入
 func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
 
@@ -191,9 +204,10 @@ func(p *node) showPadding(pad int) string {
     padding := strings.Repeat("-", pad)
     
     res += padding + "["
-    //fmt.Printf("%s[",padding)
     for i:= 0;i < p.dataCount;i++ {
-        res += strconv.Itoa(int(p.values[i].key)) + ","
+        res += strconv.Itoa(int(p.values[i].key)) + "("
+        res += strconv.Itoa(len(p.values[i].rows))
+        res += "),"
     }
     res += "]\n"
     
