@@ -57,6 +57,7 @@ func createNewRoot(newNodeValue nodeValue,rootNode *node,newChildNode *node) *no
     return newRootNode
 }
 
+//TODO ノードサイズを可変にする
 const MAX_NODE_NUM int = 255
 
 //Bツリーのノード
@@ -121,7 +122,107 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
     //分割なし
     return nodeValue{},nil
 }
+//削除
+//TODO test
+//TODO ノードが0件になった場合
+//TODO リファクタ
+func(p *node) Delete(deleteValue Integer) bool{
 
+    isMatch,deletePos := p.getPositionLinear(deleteValue)
+    
+    //一致
+    if isMatch {
+        //葉の場合
+        if p.nodes[deletePos] ==nil{
+            //普通に消す
+            p.deleteValue(deletePos)
+            if p.dataCount > MAX_NODE_NUM/2 {
+                //データが十分にある
+                return false
+            }
+            return true
+        }
+        //葉じゃない場合
+        if p.nodes[deletePos].dataCount > MAX_NODE_NUM/2 {
+            //左子から値を持ってくる。
+            
+            //deletePosに左子ノードの最大値を挿入
+            p.values[deletePos] = p.nodes[deletePos].getMaxValue()
+            //左子ノードの最大値を削除
+            p.nodes[deletePos].Delete(p.nodes[deletePos].getMaxValue().key)
+        } else if p.nodes[deletePos+1].dataCount > MAX_NODE_NUM/2 {
+            //右子から値を持ってくる。
+            //deletePosに右子ノードの最小値を挿入
+            p.values[deletePos] = p.nodes[deletePos+1].getMinValue()
+            //右子ノードの最小値を削除
+            p.nodes[deletePos+1].Delete(p.nodes[deletePos+1].getMinValue().key)
+        } else {
+            //とりあえず左子から最大値を持ってくる
+            p.values[deletePos] = p.nodes[deletePos].getMaxValue()
+            //左子ノードの最大値を削除
+            p.nodes[deletePos].Delete(p.nodes[deletePos].getMaxValue().key)
+            
+            
+            //左子、持ってきた値、右子をマージして右子に入れる
+            p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
+            //値（と左子）を削除
+            p.deleteValue(deletePos)
+        }
+        return false
+    }
+    
+    //不一致
+    //子ノードあり
+    if  p.nodes[deletePos] != nil {
+        if p.nodes[deletePos].Delete(deleteValue) {
+            //子ノードで要素数が足りない
+            
+            //右ノードに要素が十分ある
+            //自ノードの値を渡す
+            //代わりを右から持ってくる
+            
+            //最右端の場合
+            //左ノードに要素が十分ある
+            //自ノードの値を渡す
+            //代わりを左から持ってくる
+            
+            //上記以外
+            //子、自分、右ノードをマージする
+            //最右端の場合
+            //子、自分、左ノードをマージする
+            //自分を消す
+        }
+        return false
+    }
+    //データなし
+    return false
+}
+
+//左右ノードのマージ
+//TODO test
+func nodeMerge(leftNode *node,med nodeValue,rightNode *node) *node{
+    mergeNode := new(node)
+    //左ノード代入
+    for i:= 0;i<leftNode.dataCount;i++ {
+        mergeNode.values[i] = leftNode.values[i]
+        mergeNode.nodes[i] = leftNode.nodes[i]
+        mergeNode.dataCount +=1
+    }
+    //中央値
+    mergeNode.values[mergeNode.dataCount] = med
+    mergeNode.nodes[mergeNode.dataCount] = leftNode.nodes[leftNode.dataCount]
+    mergeNode.dataCount +=1
+    
+    //右ノード代入
+    for i:= 0;i<rightNode.dataCount;i++ {
+        mergeNode.values[leftNode.dataCount + i] = rightNode.values[i]
+        mergeNode.nodes[leftNode.dataCount + i] = rightNode.nodes[i]
+        mergeNode.dataCount +=1
+    }
+    //最後のノードポインタ
+    mergeNode.nodes[mergeNode.dataCount] = rightNode.nodes[rightNode.dataCount]
+    return mergeNode
+}
 /*
  *ノードを分割する
  */
@@ -193,6 +294,34 @@ func(p *node) insertValue(insertPos int,insertNodeValue nodeValue,newNode *node)
     p.values[insertPos] = insertNodeValue
     p.nodes[insertPos+1] = newNode
     p.dataCount += 1
+}
+
+//ノード内の値を削除する
+//TODO test
+func(p *node) deleteValue(deletePos int) {
+    for i:= deletePos ; i < p.dataCount;i++ {
+        p.values[i] = p.values[i+1]
+        p.nodes[i] = p.nodes[i+1]   
+    }
+    p.nodes[p.dataCount] = p.nodes[p.dataCount+1]
+    p.dataCount -= 1
+}
+
+//ノード配下の最大値を返す
+//TODO test
+func(p *node) getMaxValue() nodeValue{
+    if p.nodes[p.dataCount] != nil {
+        return p.nodes[p.dataCount].getMaxValue()
+    }
+    return p.values[p.dataCount-1]
+}
+//ノード配下の最小値を返す
+//TODO test
+func(p *node) getMinValue() nodeValue{
+    if p.nodes[0] != nil {
+        return p.nodes[0].getMinValue()
+    }
+    return p.values[0]
 }
 
 //ノード内の状態を出力する
