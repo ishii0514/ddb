@@ -177,45 +177,45 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
     }
     
     //不一致
-    if  p.nodes[deletePos] != nil {
-        //内部接点
-        if p.nodes[deletePos].dataCount <= MAX_NODE_NUM/2 {
-            //対象子ノードに要素が十分に無い場合    
-            if deletePos < p.dataCount && p.nodes[deletePos+1].dataCount > MAX_NODE_NUM/2 {
-                //右兄弟ノードに要素が十分ある
-                //対象子ノード末尾に要素を挿入
-                p.nodes[deletePos].addTail(
-                    p.values[deletePos],
-                    p.nodes[deletePos+1].nodes[0])
-                    
-                //現ノードに右兄弟から値を代入
-                p.values[deletePos] = p.nodes[deletePos+1].values[0]
-                //右兄弟から値を削除
-                p.nodes[deletePos+1].removeHead()
-            } else if deletePos > 0 && p.nodes[deletePos-1].dataCount > MAX_NODE_NUM/2 {
-                //左兄弟ノードがあり要素が十分ある
-                //対象子ノード先頭に要素を挿入
-                p.nodes[deletePos].addHead(
-                    p.values[deletePos-1],
-                    p.nodes[deletePos-1].nodes[p.nodes[deletePos-1].dataCount])
-                //現ノードに左兄弟から値を代入
-                p.values[deletePos-1] = p.nodes[deletePos-1].values[p.nodes[deletePos-1].dataCount-1]
-                //左兄弟から値を削除
-                p.nodes[deletePos-1].removeTail()
-            } else{
-                //右兄弟ノードとマージ
-                //対象子ノード、現在の値、右兄弟をマージして右兄弟に入れる
-                p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
-                //値（と左子）を削除
-                p.deleteValue(deletePos)
-                //根ノードの時、valuesがなくnodes[1]だけ残る場合がある。
-            }
-        }
-        //再帰的に削除            
-        return p.nodes[deletePos].Delete(deleteValue)
+    if  p.nodes[deletePos] == nil {
+        //葉
+        return ROWNUM(0)
     }
-    //データなし
-    return ROWNUM(0)
+    //内部接点
+    if p.nodes[deletePos].dataCount <= MAX_NODE_NUM/2 {
+        //対象子ノードに要素が十分に無い場合    
+        if deletePos < p.dataCount && p.nodes[deletePos+1].dataCount > MAX_NODE_NUM/2 {
+            //右兄弟ノードに要素が十分ある
+            //対象子ノード末尾に要素を挿入
+            p.nodes[deletePos].addTail(
+                p.values[deletePos],
+                p.nodes[deletePos+1].nodes[0])
+                    
+            //現ノードに右兄弟から値を代入
+            p.values[deletePos] = p.nodes[deletePos+1].values[0]
+            //右兄弟から値を削除
+            p.nodes[deletePos+1].removeHead()
+        } else if deletePos > 0 && p.nodes[deletePos-1].dataCount > MAX_NODE_NUM/2 {
+            //左兄弟ノードがあり要素が十分ある
+            //対象子ノード先頭に要素を挿入
+            p.nodes[deletePos].addHead(
+                p.values[deletePos-1],
+                p.nodes[deletePos-1].nodes[p.nodes[deletePos-1].dataCount])
+            //現ノードに左兄弟から値を代入
+            p.values[deletePos-1] = p.nodes[deletePos-1].values[p.nodes[deletePos-1].dataCount-1]
+            //左兄弟から値を削除
+            p.nodes[deletePos-1].removeTail()
+        } else{
+            //右兄弟ノードとマージ
+            //対象子ノード、現在の値、右兄弟をマージして右兄弟に入れる
+            p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
+            //値（と左子）を削除
+            p.deleteValue(deletePos)
+            //根ノードの時、valuesがなくnodes[1]だけ残る場合がある。
+        }
+    }
+    //再帰的に削除            
+    return p.nodes[deletePos].Delete(deleteValue)
 }
 
 //左右ノードのマージ
