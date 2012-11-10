@@ -338,11 +338,16 @@ func(p *node) addHead(insertNodeValue nodeValue,newNode *node) {
 //TODO test
 func(p *node) deleteValue(deletePos int) ROWNUM {
     rows := len(p.values[deletePos].rows)
-    for i:= deletePos ; i < p.dataCount;i++ {
+    for i:= deletePos ; i < p.dataCount-1;i++ {
         p.values[i] = p.values[i+1]
         p.nodes[i] = p.nodes[i+1]   
     }
-    p.nodes[p.dataCount] = p.nodes[p.dataCount+1]
+    p.nodes[p.dataCount-1] = p.nodes[p.dataCount]
+    
+    //初期化
+    p.values[p.dataCount-1] = nodeValue{}
+    p.nodes[p.dataCount] = nil
+    
     p.dataCount -= 1
     return ROWNUM(rows)
 }
