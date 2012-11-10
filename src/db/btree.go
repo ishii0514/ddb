@@ -10,6 +10,7 @@ import (
 type BtreeInteger struct{
     rootNode *node
     dataCount ROWNUM
+    rowid ROWNUM
 }
 //BtreeIntegerの生成
 func CreateNewBtree() BtreeInteger {
@@ -37,13 +38,25 @@ func(p *BtreeInteger) Search(searchValue Integer) []ROWNUM{
 
 //挿入
 func(p *BtreeInteger) Insert(insertValue Integer) ROWNUM{
-    newNodeValue,newChildNode := p.rootNode.Insert(insertValue,p.dataCount)
+    newNodeValue,newChildNode := p.rootNode.Insert(insertValue,p.rowid)
     if newChildNode != nil {
         //ルートノードの付け替え
         p.rootNode = createNewRoot(newNodeValue,p.rootNode,newChildNode)
     }
     p.dataCount += 1
+    p.rowid += 1
     return ROWNUM(1)
+}
+//削除
+//test 件数正しいか
+func(p *BtreeInteger) Delete(insertValue Integer) ROWNUM{
+    deleteRows := p.rootNode.Delete(insertValue)
+    if p.rootNode.dataCount == 0 && p.dataCount > 0 {
+        //親ルートが0件
+        p.rootNode = p.rootNode.nodes[1]    //右子が残る
+    }
+    p.dataCount = p.dataCount - deleteRows
+    return deleteRows
 }
 /*
  * 新規ルートノードの生成
@@ -57,7 +70,8 @@ func createNewRoot(newNodeValue nodeValue,rootNode *node,newChildNode *node) *no
     return newRootNode
 }
 
-//TODO ノードサイズを可変にする
+//TODO ノードサイズを可変にする 
+//ノードサイズ(2t-1)　奇数である事
 const MAX_NODE_NUM int = 255
 
 //Bツリーのノード
@@ -124,9 +138,8 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
 }
 //削除
 //TODO test
-//TODO ノードが0件になった場合
 //TODO リファクタ
-func(p *node) Delete(deleteValue Integer) bool{
+func(p *node) Delete(deleteValue Integer) ROWNUM{
 
     isMatch,deletePos := p.getPositionLinear(deleteValue)
     
@@ -134,68 +147,75 @@ func(p *node) Delete(deleteValue Integer) bool{
     if isMatch {
         //葉の場合
         if p.nodes[deletePos] ==nil{
-            //普通に消す
-            p.deleteValue(deletePos)
-            if p.dataCount > MAX_NODE_NUM/2 {
-                //データが十分にある
-                return false
-            }
-            return true
+            //消す
+            return p.deleteValue(deletePos)
         }
-        //葉じゃない場合
+        //内部接点の場合
+        rows := len(p.values[deletePos].rows)
         if p.nodes[deletePos].dataCount > MAX_NODE_NUM/2 {
             //左子から値を持ってくる。
-            
             //deletePosに左子ノードの最大値を挿入
             p.values[deletePos] = p.nodes[deletePos].getMaxValue()
             //左子ノードの最大値を削除
-            p.nodes[deletePos].Delete(p.nodes[deletePos].getMaxValue().key)
+            p.nodes[deletePos].Delete(p.values[deletePos].key)
         } else if p.nodes[deletePos+1].dataCount > MAX_NODE_NUM/2 {
             //右子から値を持ってくる。
             //deletePosに右子ノードの最小値を挿入
             p.values[deletePos] = p.nodes[deletePos+1].getMinValue()
             //右子ノードの最小値を削除
-            p.nodes[deletePos+1].Delete(p.nodes[deletePos+1].getMinValue().key)
+            p.nodes[deletePos+1].Delete(p.values[deletePos].key)
         } else {
-            //とりあえず左子から最大値を持ってくる
-            p.values[deletePos] = p.nodes[deletePos].getMaxValue()
-            //左子ノードの最大値を削除
-            p.nodes[deletePos].Delete(p.nodes[deletePos].getMaxValue().key)
-            
-            
-            //左子、持ってきた値、右子をマージして右子に入れる
+            //左子、現在の値、右子をマージして右子に入れる
             p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
             //値（と左子）を削除
             p.deleteValue(deletePos)
+            //再帰的に右子から削除
+            p.nodes[deletePos+1].Delete(deleteValue)
+            //根ノードの時、valuesがなくnodes[1]だけ残る場合がある。
         }
-        return false
+        return ROWNUM(rows)
     }
     
     //不一致
-    //子ノードあり
     if  p.nodes[deletePos] != nil {
-        if p.nodes[deletePos].Delete(deleteValue) {
-            //子ノードで要素数が足りない
-            
-            //右ノードに要素が十分ある
-            //自ノードの値を渡す
-            //代わりを右から持ってくる
-            
-            //最右端の場合
-            //左ノードに要素が十分ある
-            //自ノードの値を渡す
-            //代わりを左から持ってくる
-            
-            //上記以外
-            //子、自分、右ノードをマージする
-            //最右端の場合
-            //子、自分、左ノードをマージする
-            //自分を消す
+        //内部接点
+        if p.nodes[deletePos].dataCount <= MAX_NODE_NUM/2 {
+            //対象子ノードに要素が十分に無い場合    
+            if deletePos < p.dataCount && p.nodes[deletePos+1].dataCount > MAX_NODE_NUM/2 {
+                //右兄弟ノードに要素が十分ある
+                //対象子ノード末尾に要素を挿入
+                p.nodes[deletePos].addTail(
+                    p.values[deletePos],
+                    p.nodes[deletePos+1].nodes[0])
+                    
+                //現ノードに右兄弟から値を代入
+                p.values[deletePos] = p.nodes[deletePos+1].values[0]
+                //右兄弟から値を削除
+                p.nodes[deletePos+1].removeHead()
+            } else if deletePos > 0 && p.nodes[deletePos-1].dataCount > MAX_NODE_NUM/2 {
+                //左兄弟ノードがあり要素が十分ある
+                //対象子ノード先頭に要素を挿入
+                p.nodes[deletePos].addHead(
+                    p.values[deletePos-1],
+                    p.nodes[deletePos-1].nodes[p.nodes[deletePos-1].dataCount])
+                //現ノードに左兄弟から値を代入
+                p.values[deletePos-1] = p.nodes[deletePos-1].values[p.nodes[deletePos-1].dataCount-1]
+                //左兄弟から値を削除
+                p.nodes[deletePos-1].removeTail()
+            } else{
+                //右兄弟ノードとマージ
+                //対象子ノード、現在の値、右兄弟をマージして右兄弟に入れる
+                p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
+                //値（と左子）を削除
+                p.deleteValue(deletePos)
+                //根ノードの時、valuesがなくnodes[1]だけ残る場合がある。
+            }
         }
-        return false
+        //再帰的に削除            
+        return p.nodes[deletePos].Delete(deleteValue)
     }
     //データなし
-    return false
+    return ROWNUM(0)
 }
 
 //左右ノードのマージ
@@ -295,19 +315,49 @@ func(p *node) insertValue(insertPos int,insertNodeValue nodeValue,newNode *node)
     p.nodes[insertPos+1] = newNode
     p.dataCount += 1
 }
+//末尾に値を挿入する
+func(p *node) addTail(insertNodeValue nodeValue,newNode *node) {
+    p.insertValue(p.dataCount,insertNodeValue,newNode)
+}
+
+//ノードの先頭に値を挿入する
+//nodesも0番目に挿入されるので、insertValueと異なる。
+func(p *node) addHead(insertNodeValue nodeValue,newNode *node) {
+
+    p.nodes[p.dataCount+1] = p.nodes[p.dataCount]
+    for i:= p.dataCount;i > 0;i-- {
+        p.values[i] = p.values[i-1]
+        p.nodes[i] = p.nodes[i-1]   
+    }
+    p.values[0] = insertNodeValue
+    p.nodes[0] = newNode
+    p.dataCount += 1
+}
 
 //ノード内の値を削除する
 //TODO test
-func(p *node) deleteValue(deletePos int) {
+func(p *node) deleteValue(deletePos int) ROWNUM {
+    rows := len(p.values[deletePos].rows)
     for i:= deletePos ; i < p.dataCount;i++ {
         p.values[i] = p.values[i+1]
         p.nodes[i] = p.nodes[i+1]   
     }
     p.nodes[p.dataCount] = p.nodes[p.dataCount+1]
     p.dataCount -= 1
+    return ROWNUM(rows)
 }
-
-//ノード配下の最大値を返す
+//先頭の値を削除する
+func(p *node) removeHead() {
+    p.deleteValue(0)
+}
+//ノードの末尾の値を削除する
+//nodesはdataCount+1番目が削除されるので、deleteValue。
+func(p *node) removeTail() {
+    p.values[p.dataCount] = nodeValue{}
+    p.nodes[p.dataCount+1] = nil
+    p.dataCount -= 1
+}
+//ノード配下の最大値をgetする
 //TODO test
 func(p *node) getMaxValue() nodeValue{
     if p.nodes[p.dataCount] != nil {
@@ -315,7 +365,7 @@ func(p *node) getMaxValue() nodeValue{
     }
     return p.values[p.dataCount-1]
 }
-//ノード配下の最小値を返す
+//ノード配下の最小値をgetする
 //TODO test
 func(p *node) getMinValue() nodeValue{
     if p.nodes[0] != nil {
