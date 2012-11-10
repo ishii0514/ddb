@@ -51,9 +51,9 @@ func(p *BtreeInteger) Insert(insertValue Integer) ROWNUM{
 //test 件数正しいか
 func(p *BtreeInteger) Delete(insertValue Integer) ROWNUM{
     deleteRows := p.rootNode.Delete(insertValue)
-    if p.rootNode.dataCount == 0 && p.dataCount > 0 {
-        //親ルートが0件
-        p.rootNode = p.rootNode.nodes[1]    //右子が残る
+    if p.rootNode.dataCount == 0 && p.rootNode.nodes[0] != nil{
+        //ルートノードの付け替え
+        p.rootNode = p.rootNode.nodes[0]
     }
     p.dataCount = p.dataCount - deleteRows
     return deleteRows
@@ -170,8 +170,8 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             //値（と左子）を削除
             p.deleteValue(deletePos)
             //再帰的に右子から削除
+            //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
             p.nodes[deletePos+1].Delete(deleteValue)
-            //根ノードの時、valuesがなくnodes[1]だけ残る場合がある。
         }
         return ROWNUM(rows)
     }
@@ -210,8 +210,8 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             //対象子ノード、現在の値、右兄弟をマージして右兄弟に入れる
             p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
             //値（と左子）を削除
+            //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
             p.deleteValue(deletePos)
-            //根ノードの時、valuesがなくnodes[1]だけ残る場合がある。
         }
     }
     //再帰的に削除            
