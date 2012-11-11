@@ -13,8 +13,8 @@ type BtreeInteger struct{
     rowid ROWNUM
 }
 //BtreeIntegerの生成
-func CreateNewBtree() BtreeInteger {
-    return BtreeInteger{rootNode:new(node),dataCount:0}
+func CreateBtree(t int) BtreeInteger {
+    return BtreeInteger{rootNode:createNode(t),dataCount:0}
 }
 
 //データ数
@@ -62,7 +62,7 @@ func(p *BtreeInteger) Delete(insertValue Integer) ROWNUM{
  * 新規ルートノードの生成
  */
 func createNewRoot(newNodeValue nodeValue,rootNode *node,newChildNode *node) *node{
-	newRootNode := new(node)
+	newRootNode := createNode(rootNode.t)
     newRootNode.values[0] = newNodeValue
     newRootNode.nodes[0] = rootNode
     newRootNode.nodes[1] = newChildNode
@@ -70,19 +70,30 @@ func createNewRoot(newNodeValue nodeValue,rootNode *node,newChildNode *node) *no
     return newRootNode
 }
 
-//TODO ノードサイズを可変にする 
-//ノードサイズ(2t-1)　奇数である事
-const MAX_NODE_NUM int = 255
-
 //Bツリーのノード
 type node struct{
-    //値
-    values [MAX_NODE_NUM]nodeValue
-    //子ノード
-    nodes  [MAX_NODE_NUM+1]*node
     //データ数
-    dataCount int
+    dataCount int    
+    //値
+    values []nodeValue
+    //子ノード
+    nodes  []*node
+    //ノードサイズ
+    t int
 }
+
+func createNode(t int) *node{
+    newNode := new(node)
+    nodeSize := 2*t-1
+    if t <= 0 {
+        nodeSize = 0
+    }
+    newNode.values = make([]nodeValue,nodeSize)
+    newNode.nodes = make([]*node,nodeSize+1)
+    newNode.t = t
+    return newNode
+}
+
 
 type nodeValue struct{
     key Integer
@@ -129,7 +140,7 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
    
     //新規データの挿入
     p.insertValue(insertPos,newNodeValue,newChildNode)
-    if p.dataCount >= MAX_NODE_NUM {
+    if p.dataCount >= len(p.values) {
 		//ノード分割
     	return p.devideNode(p.dataCount /2)
     }
@@ -152,13 +163,13 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
         }
         //内部接点の場合
         rows := len(p.values[deletePos].rows)
-        if p.nodes[deletePos].dataCount > MAX_NODE_NUM/2 {
+        if p.nodes[deletePos].dataCount >= p.t {
             //左子から値を持ってくる。
             //deletePosに左子ノードの最大値を挿入
             p.values[deletePos] = p.nodes[deletePos].getMaxValue()
             //左子ノードの最大値を削除
             p.nodes[deletePos].Delete(p.values[deletePos].key)
-        } else if p.nodes[deletePos+1].dataCount > MAX_NODE_NUM/2 {
+        } else if p.nodes[deletePos+1].dataCount >= p.t {
             //右子から値を持ってくる。
             //deletePosに右子ノードの最小値を挿入
             p.values[deletePos] = p.nodes[deletePos+1].getMinValue()
@@ -184,9 +195,9 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
         return ROWNUM(0)
     }
     //内部接点
-    if p.nodes[deletePos].dataCount <= MAX_NODE_NUM/2 {
+    if p.nodes[deletePos].dataCount <= p.t-1 {
         //対象子ノードに要素が十分に無い場合    
-        if deletePos < p.dataCount && p.nodes[deletePos+1].dataCount > MAX_NODE_NUM/2 {
+        if deletePos < p.dataCount && p.nodes[deletePos+1].dataCount >= p.t {
             //右兄弟ノードに要素が十分ある
             //対象子ノード末尾に要素を挿入
             p.nodes[deletePos].addTail(
@@ -197,7 +208,7 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             p.values[deletePos] = p.nodes[deletePos+1].values[0]
             //右兄弟から値を削除
             p.nodes[deletePos+1].removeHead()
-        } else if deletePos > 0 && p.nodes[deletePos-1].dataCount > MAX_NODE_NUM/2 {
+        } else if deletePos > 0 && p.nodes[deletePos-1].dataCount >=p.t {
             //左兄弟ノードがあり要素が十分ある
             //対象子ノード先頭に要素を挿入
             p.nodes[deletePos].addHead(
@@ -233,7 +244,7 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
 //左右ノードのマージ
 //TODO test
 func mergeNodes(leftNode *node,med nodeValue,rightNode *node) *node{
-    mergeNode := new(node)
+    mergeNode := createNode(leftNode.t)
     //左ノード代入
     for i:= 0;i<leftNode.dataCount;i++ {
         mergeNode.values[i] = leftNode.values[i]
@@ -291,7 +302,7 @@ func(p *node) clear(devidePosition int) {
  */
 func createNewNode(srcNode *node,devidePosition int) *node {
     //木の分割
-    newNode := new(node)
+    newNode := createNode(srcNode.t)
     newNode.nodes[0] = srcNode.nodes[devidePosition+1]
     for i,j:= devidePosition+1, 0 ; i<srcNode.dataCount;i,j = i+1,j+1{
         //データを移す
