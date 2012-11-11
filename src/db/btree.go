@@ -164,14 +164,16 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             p.values[deletePos] = p.nodes[deletePos+1].getMinValue()
             //右子ノードの最小値を削除
             p.nodes[deletePos+1].Delete(p.values[deletePos].key)
+
         } else {
             //左子、現在の値、右子をマージして右子に入れる
-            p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
+            p.nodes[deletePos+1] = mergeNodes(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
             //値（と左子）を削除
             p.deleteValue(deletePos)
             //再帰的に右子から削除
             //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
             p.nodes[deletePos+1].Delete(deleteValue)
+            
         }
         return ROWNUM(rows)
     }
@@ -205,13 +207,23 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             p.values[deletePos-1] = p.nodes[deletePos-1].values[p.nodes[deletePos-1].dataCount-1]
             //左兄弟から値を削除
             p.nodes[deletePos-1].removeTail()
-        } else{
+        } else if deletePos < p.dataCount {
             //右兄弟ノードとマージ
             //対象子ノード、現在の値、右兄弟をマージして右兄弟に入れる
-            p.nodes[deletePos+1] = nodeMerge(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
+            p.nodes[deletePos+1] = mergeNodes(p.nodes[deletePos],p.values[deletePos],p.nodes[deletePos+1])
             //値（と左子）を削除
             //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
             p.deleteValue(deletePos)
+        } else {
+            //右兄弟が無い場合,左兄弟ノードとマージ
+            //左兄弟、現在の値、対象子ノードをマージして対象子ノードに入れる
+            p.nodes[deletePos] = mergeNodes(p.nodes[deletePos-1],p.values[deletePos-1],p.nodes[deletePos])
+            //値（と左子）を削除
+            //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
+            p.deleteValue(deletePos-1)
+            
+            //削除した分ずれる
+            deletePos = deletePos-1
         }
     }
     //再帰的に削除            
@@ -220,7 +232,7 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
 
 //左右ノードのマージ
 //TODO test
-func nodeMerge(leftNode *node,med nodeValue,rightNode *node) *node{
+func mergeNodes(leftNode *node,med nodeValue,rightNode *node) *node{
     mergeNode := new(node)
     //左ノード代入
     for i:= 0;i<leftNode.dataCount;i++ {
