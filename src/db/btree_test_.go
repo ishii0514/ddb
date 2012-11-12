@@ -87,7 +87,7 @@ func TestGetPositionLinear(t *testing.T) {
     testNode.values[2].key = 25
     testNode.values[2].rows = []ROWNUM{3,5}
     
-    match,pos := testNode.getPositionLinear(18)
+    match,pos := testNode.getPosition(18)
     if match != true {
         t.Error("illegal match.18")
     }
@@ -95,7 +95,7 @@ func TestGetPositionLinear(t *testing.T) {
         t.Error("illegal position.18")
     }
     
-    match,pos = testNode.getPositionLinear(19)
+    match,pos = testNode.getPosition(19)
     if match != false {
         t.Error("illegal match.19")
     }
@@ -103,7 +103,7 @@ func TestGetPositionLinear(t *testing.T) {
         t.Error("illegal position.19")
     }
     
-    match,pos = testNode.getPositionLinear(40)
+    match,pos = testNode.getPosition(40)
     if match != false {
         t.Error("illegal match.40")
     }
@@ -111,7 +111,104 @@ func TestGetPositionLinear(t *testing.T) {
         t.Error("illegal position.40")
     }
     
+    match,pos = testNode.getPosition(3)
+    if match != false {
+        t.Error("illegal match.3")
+    }
+    if pos != 0 {
+        t.Error("illegal position.3")
+    }
+    
 
+}
+
+func TestGetBinarySearch(t *testing.T) {
+    testNode := createNode(128)
+    testNode.dataCount = 3
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    
+    match,pos := testNode.binarySearch(18,0,testNode.dataCount-1)
+    if match != true {
+        t.Error("binarySearch illegal match.18")
+    }
+    if pos != 1 {
+        t.Error("binarySearch illegal position.18")
+    }
+    
+    match,pos = testNode.binarySearch(19,0,testNode.dataCount-1)
+    if match != false {
+        t.Error("binarySearch illegal match.19")
+    }
+    if pos != 2 {
+        t.Error("binarySearch illegal position.19")
+    }
+    
+    match,pos = testNode.binarySearch(40,0,testNode.dataCount-1)
+    if match != false {
+        t.Error("binarySearch illegal match.40")
+    }
+    if pos != 3 {
+        t.Error("binarySearch illegal position.40 pos",pos)
+    }
+    
+    match,pos = testNode.binarySearch(3,0,testNode.dataCount-1)
+    if match != false {
+        t.Error("binarySearch illegal match.3")
+    }
+    if pos != 0 {
+        t.Error("binarySearch illegal position.3 pos",pos)
+    }
+}
+func TestGetBinarySearch2(t *testing.T) {
+    testNode := createNode(128)
+    testNode.dataCount = 5
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 10
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 15
+    testNode.values[2].rows = []ROWNUM{3,5}
+    testNode.values[3].key = 20
+    testNode.values[3].rows = []ROWNUM{3,5}
+    testNode.values[4].key = 25
+    testNode.values[4].rows = []ROWNUM{3,5}
+    
+    match,pos := testNode.binarySearch(18,0,testNode.dataCount-1)
+    if match != false {
+        t.Error("binarySearch2 illegal match.18")
+    }
+    if pos != 3 {
+        t.Error("binarySearch2 illegal position.18")
+    }
+    
+    match,pos = testNode.binarySearch(25,0,testNode.dataCount-1)
+    if match != true {
+        t.Error("binarySearch2 illegal match.25")
+    }
+    if pos != 4 {
+        t.Error("binarySearch2 illegal position.25")
+    }
+    
+    match,pos = testNode.binarySearch(40,0,testNode.dataCount-1)
+    if match != false {
+        t.Error("binarySearch2 illegal match.40")
+    }
+    if pos != 5 {
+        t.Error("binarySearch2 illegal position.40 pos",pos)
+    }
+    
+    match,pos = testNode.binarySearch(3,0,testNode.dataCount-1)
+    if match != false {
+        t.Error("binarySearch2 illegal match.3")
+    }
+    if pos != 0 {
+        t.Error("binarySearch2 illegal position.3 pos",pos)
+    }
 }
 
 func TestInsertValue(t *testing.T) {

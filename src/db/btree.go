@@ -102,7 +102,7 @@ type nodeValue struct{
 
 //探索
 func(p *node) Search(searchValue Integer) []ROWNUM{
-    isMatch,searchPos := p.getPositionLinear(searchValue)
+    isMatch,searchPos := p.getPosition(searchValue)
 
     //一致
     if isMatch {
@@ -120,7 +120,7 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
 //挿入
 func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
 
-  	isMatch,insertPos := p.getPositionLinear(insertValue)
+  	isMatch,insertPos := p.getPosition(insertValue)
 	//一致
     if isMatch {
         p.values[insertPos].rows = append(p.values[insertPos].rows,row)
@@ -152,7 +152,7 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
 //TODO リファクタ
 func(p *node) Delete(deleteValue Integer) ROWNUM{
 
-    isMatch,deletePos := p.getPositionLinear(deleteValue)
+    isMatch,deletePos := p.getPosition(deleteValue)
     
     //一致
     if isMatch {
@@ -313,11 +313,16 @@ func createNewNode(srcNode *node,devidePosition int) *node {
     return newNode
 }
 
+//ノード内の操作対象箇所を検索する
+func(p *node) getPosition(searchValue Integer) (bool,int) {
+    return p.binarySearch(searchValue,0,p.dataCount-1)
+}
+
 //ノード内の操作対象箇所を線形検索する
-func(p *node) getPositionLinear(searchValue Integer) (bool,int) {
-	//線形探索
-	var i int =0
-	for ; i< p.dataCount;i++ {
+func(p *node) linearSearch(searchValue Integer) (bool,int){
+    //線形探索
+    var i int =0
+    for ; i< p.dataCount;i++ {
         if p.values[i].key >= searchValue {
             break
         }
@@ -326,6 +331,20 @@ func(p *node) getPositionLinear(searchValue Integer) (bool,int) {
         return false,p.dataCount
     }
     return p.values[i].key == searchValue,i
+}
+//ノード内の操作対象箇所を二分検索する
+func(p *node) binarySearch(searchValue Integer,head int,tail int) (bool,int){
+    if head > tail {
+        return false,head
+    }
+    pivot := (head+tail)/2
+    
+    if p.values[pivot].key == searchValue {
+        return true,pivot
+    } else if p.values[pivot].key > searchValue {
+        return p.binarySearch(searchValue,head,pivot-1)
+    }
+    return p.binarySearch(searchValue,pivot+1,tail)
 }
 
 //ノード内に値を挿入する

@@ -34,6 +34,8 @@ var tests =[]testing.InternalTest{
     {"db.TestNode",db.TestNode},
     {"db.TestBtreeLinearSearch",db.TestBtreeLinearSearch},
     {"db.TestGetPositionLinear",db.TestGetPositionLinear},
+    {"db.TestGetBinarySearch",db.TestGetBinarySearch},
+    {"db.TestGetBinarySearch2",db.TestGetBinarySearch2},
     {"db.TestInsertValue",db.TestInsertValue},
     {"db,TestCreateNewNode",db.TestCreateNewNode},
     {"db.TestClear",db.TestClear},
