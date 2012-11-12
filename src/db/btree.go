@@ -88,8 +88,9 @@ func createNode(t int) *node{
     if t <= 0 {
         nodeSize = 0
     }
-    newNode.values = make([]nodeValue,nodeSize)
-    newNode.nodes = make([]*node,nodeSize+1)
+    //予備で一つ分多く取っておく
+    newNode.values = make([]nodeValue,nodeSize+1)
+    newNode.nodes = make([]*node,nodeSize+2)
     newNode.t = t
     return newNode
 }
@@ -140,9 +141,9 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValue,*node){
    
     //新規データの挿入
     p.insertValue(insertPos,newNodeValue,newChildNode)
-    if p.dataCount >= len(p.values) {
+    if p.dataCount > p.t*2-1 {
 		//ノード分割
-    	return p.devideNode(p.dataCount /2)
+    	return p.devideNode(p.t)
     }
     //分割なし
     return nodeValue{},nil
