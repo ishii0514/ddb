@@ -661,7 +661,7 @@ func TestBtreeDelete(t *testing.T) {
     if delCnt != 1{
         t.Error("illegal delete count.")
     }
-    if btree.dataCount != 155 {
+    if btree.DataCount() != 155 {
         t.Error("illegal data count.")
     }
     res = btree.show()
@@ -672,7 +672,7 @@ func TestBtreeDelete(t *testing.T) {
     if delCnt != 2 {
         t.Error("illegal delete count.")
     }
-    if btree.dataCount != 153 {
+    if btree.DataCount() != 153 {
         t.Error("illegal data count.")
     }
     res = btree.show()
@@ -682,7 +682,7 @@ func TestBtreeDelete(t *testing.T) {
     if delCnt != 1 {
         t.Error("illegal delete count.")
     }
-    if btree.dataCount != 152 {
+    if btree.DataCount() != 152 {
         t.Error("illegal data count.")
     }
     res = btree.show()
@@ -692,7 +692,7 @@ func TestBtreeDelete(t *testing.T) {
     if delCnt != 0 {
         t.Error("illegal delete count.")
     }
-    if btree.dataCount != 152 {
+    if btree.DataCount() != 152 {
         t.Error("illegal data count.")
     }
 }

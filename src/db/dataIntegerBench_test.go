@@ -4,6 +4,10 @@ import (
     "testing"
     "math/rand"
 )
+//benchmark実行コマンド
+//cd src/db
+//go test -bench=".*"
+
 
 //データ件数
 var DATA_CNT int = 10000000
@@ -15,6 +19,15 @@ func createDataArray(datanumber int) ArrayInteger {
     }
     return dataarray
 }
+//指定したデータ件数のBtreeを生成
+func createDataBtree(datanumber int) BtreeInteger {
+    data1  := CreateBtree(128)
+    for i:=0;i<datanumber;i++ {
+        data1.Insert(Integer(i))
+    }
+    return data1
+}
+
 //ランダムなIntegerを生成
 func randumValues(roopCnt int,upperNumber int) []Integer{
     var seachValues = []Integer{}
@@ -47,6 +60,36 @@ func BenchmarkArrayIntegerSearch(b *testing.B) {
 func BenchmarkArrayIntegerDelete(b *testing.B) {
     b.StopTimer()
     var data1  = createDataArray(DATA_CNT)
+    var seachValues = randumValues(b.N,DATA_CNT)
+    b.StartTimer()
+    for _, v := range seachValues {
+        data1.Delete(v)
+    }
+}
+
+//Insertの計測
+func BenchmarkBtreeIntegerInsert(b *testing.B) {
+   data1  := CreateBtree(128)
+    for i:=0;i<b.N;i++ {
+        data1.Insert(Integer(i))
+    }
+}
+
+//Searchの計測
+func BenchmarkBtreeIntegerSearch(b *testing.B) {
+    b.StopTimer()
+    var data1  = createDataBtree(DATA_CNT)
+    var seachValues = randumValues(b.N,DATA_CNT)
+    b.StartTimer()
+    for _, v := range seachValues {
+        data1.Search(v)
+    }
+}
+
+//Deleteの計測
+func BenchmarkBtreeIntegerDelete(b *testing.B) {
+    b.StopTimer()
+    var data1  = createDataBtree(DATA_CNT)
     var seachValues = randumValues(b.N,DATA_CNT)
     b.StartTimer()
     for _, v := range seachValues {

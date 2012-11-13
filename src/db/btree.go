@@ -1,7 +1,6 @@
 package db
 
 import (
-    //"fmt"
     "strings"
     "strconv"
 )
@@ -14,7 +13,7 @@ type BtreeInteger struct{
 }
 //BtreeIntegerの生成
 func CreateBtree(t int) BtreeInteger {
-    return BtreeInteger{rootNode:createNode(t),dataCount:0}
+    return BtreeInteger{rootNode:createNode(t),dataCount:0,rowid:0}
 }
 
 //データ数
@@ -49,8 +48,8 @@ func(p *BtreeInteger) Insert(insertValue Integer) ROWNUM{
 }
 //削除
 //test 件数正しいか
-func(p *BtreeInteger) Delete(insertValue Integer) ROWNUM{
-    deleteRows := p.rootNode.Delete(insertValue)
+func(p *BtreeInteger) Delete(deleteValue Integer) ROWNUM{
+    deleteRows := p.rootNode.Delete(deleteValue)
     if p.rootNode.dataCount == 0 && p.rootNode.nodes[0] != nil{
         //ルートノードの付け替え
         p.rootNode = p.rootNode.nodes[0]

@@ -28,6 +28,17 @@ func createColumn(columnName string, columnType ColumnType) Column{
     return nil
 }
 
+//カラムの生成(Btree)
+func createColumnBtree(columnName string, columnType ColumnType) Column{
+    switch {
+    case columnType == COLUMN_TYPE_INTEGER:
+        btree := CreateBtree(128)
+        newColumn := ColumnInteger{name : columnName,data:&btree}
+        return &newColumn
+    }
+    return nil
+}
+
 
 //INT型のカラム
 type ColumnInteger struct{
