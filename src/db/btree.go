@@ -184,7 +184,7 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             p.deleteValue(deletePos)
             //再帰的に右子から削除
             //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
-            p.nodes[deletePos+1].Delete(deleteValue)
+            p.nodes[deletePos].Delete(deleteValue)
             
         }
         return ROWNUM(rows)
@@ -198,13 +198,6 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
     //内部接点
     if p.nodes[deletePos].dataCount <= p.t-1 {
         //対象子ノードに要素が十分に無い場合
-        if deletePos < p.dataCount && p.nodes[deletePos+1]== nil {
-            print("deletePos=" + strconv.Itoa(deletePos) +",dataCount=" + strconv.Itoa(p.dataCount) + "\n")
-        }
-        if deletePos > 0 && p.nodes[deletePos-1]== nil {
-            print("deletePos=" + strconv.Itoa(deletePos) +",dataCount=" + strconv.Itoa(p.dataCount) + "\n")
-            print(p.Show())
-        }
         if deletePos < p.dataCount && p.nodes[deletePos+1].dataCount >= p.t {
             //右兄弟ノードに要素が十分ある
             //対象子ノード末尾に要素を挿入
