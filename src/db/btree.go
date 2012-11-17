@@ -440,9 +440,7 @@ func(p *node) showPadding(pad int) string {
     
     //子ノード
     for i:= 0;i < p.dataCount+1;i++ {
-        if p.nodes[i] == nil {
-            //res += padding+ "-nil\n"
-        } else {
+        if p.nodes[i] != nil {
             res += p.nodes[i].showPadding(pad+1)
         }
     }
