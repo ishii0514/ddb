@@ -6,8 +6,9 @@ import (
 
 //初期化されてるか確認
 func TestNode(t *testing.T) {
-    testNode := node{}
-    for _,v := range testNode.nodes {
+
+    nodes := make([]*node,20)
+    for _,v := range nodes {
         if v != nil {
             t.Error("not nil.")
         }
@@ -421,6 +422,51 @@ func TestDevideNode(t *testing.T) {
     }
 
 }
+func TestDeleteValue(t *testing.T) {
+    testNode := createNode(5)
+    testNode.dataCount = 4
+    testNode.values[0].key = 5
+    testNode.values[0].rows = []ROWNUM{1}
+    testNode.values[1].key = 18
+    testNode.values[1].rows = []ROWNUM{2}
+    testNode.values[2].key = 25
+    testNode.values[2].rows = []ROWNUM{3,5}
+    testNode.values[3].key = 40
+    testNode.values[3].rows = []ROWNUM{6,8,10}
+    cnode0 := createNode(5)
+    cnode1 := createNode(5)
+    cnode2 := createNode(5)
+    cnode3 := createNode(5)
+    cnode4 := createNode(5)
+    testNode.nodes[0] = cnode0
+    testNode.nodes[1] = cnode1
+    testNode.nodes[2] = cnode2
+    testNode.nodes[3] = cnode3
+    testNode.nodes[4] = cnode4
+    
+    res :=""
+    res +="[5(1),18(1),25(2),40(3),]\n"
+    res +="-[]\n"
+    res +="-[]\n"
+    res +="-[]\n"
+    res +="-[]\n"
+    res +="-[]\n"
+    if testNode.Show() != res {
+        t.Error("before delete.")
+    }
+    testNode.deleteValue(2)
+    if testNode.dataCount != 3 {
+        t.Error("illegal dataCount")
+    }
+    res ="[5(1),18(1),40(3),]\n"
+    res +="-[]\n"
+    res +="-[]\n"
+    res +="-[]\n"
+    res +="-[]\n"
+    if testNode.Show() != res {
+        t.Error("after delete.")
+    }
+}
 func TestCreateNewRoot(t *testing.T) {
     testNode := createNode(128)
     testNode.dataCount = 4
@@ -540,7 +586,7 @@ func TestShow(t *testing.T) {
     cnode1.nodes[0] = cnode10
     cnode1.nodes[1] = cnode11
     
-    res := testNode.show()
+    res := testNode.Show()
     
     exp := "[5(1),18(1),25(2),40(3),]\n"
     exp += "-[50(1),60(2),]\n"
@@ -560,7 +606,7 @@ func TestInsert(t *testing.T) {
     testNode := createNode(128)
     
     //0件
-    res := testNode.show()
+    res := testNode.Show()
     exp := "[]\n"
     //print(res)
     if res != exp {
@@ -571,7 +617,7 @@ func TestInsert(t *testing.T) {
     testNode.Insert(5,1)
     testNode.Insert(15,2)
     testNode.Insert(10,3)
-    res = testNode.show()
+    res = testNode.Show()
     exp = "[5(1),10(1),15(1),]\n"
     //print(res)
     if res != exp {
@@ -580,7 +626,7 @@ func TestInsert(t *testing.T) {
     
     //同じ値
     testNode.Insert(5,4)
-    res = testNode.show()
+    res = testNode.Show()
     exp = "[5(2),10(1),15(1),]\n"
     //print(res)
     if res != exp {
@@ -597,7 +643,7 @@ func TestBtreeInsert(t *testing.T) {
     for i :=0 ; i<260 ;i++ {
         btree.Insert(Integer(i))
     }
-    res := btree.show()
+    res := btree.Show()
     //print(res)
     exp := "[128(1),]\n"
     exp += "-[0(1),1(1),2(1),3(1),4(1),5(2),6(1),7(1),8(1),9(1),10(2),11(1),12(1),13(1),14(1),15(2),16(1),17(1),18(1),19(1),20(1),21(1),22(1),23(1),24(1),25(1),26(1),27(1),28(1),29(1),30(1),31(1),32(1),33(1),34(1),35(1),36(1),37(1),38(1),39(1),40(1),41(1),42(1),43(1),44(1),45(1),46(1),47(1),48(1),49(1),50(1),51(1),52(1),53(1),54(1),55(1),56(1),57(1),58(1),59(1),60(1),61(1),62(1),63(1),64(1),65(1),66(1),67(1),68(1),69(1),70(1),71(1),72(1),73(1),74(1),75(1),76(1),77(1),78(1),79(1),80(1),81(1),82(1),83(1),84(1),85(1),86(1),87(1),88(1),89(1),90(1),91(1),92(1),93(1),94(1),95(1),96(1),97(1),98(1),99(1),100(1),101(1),102(1),103(1),104(1),105(1),106(1),107(1),108(1),109(1),110(1),111(1),112(1),113(1),114(1),115(1),116(1),117(1),118(1),119(1),120(1),121(1),122(1),123(1),124(1),125(1),126(1),127(1),]\n"
@@ -621,7 +667,7 @@ func TestBtreeDelete(t *testing.T) {
     if btree.dataCount != 156 {
         t.Error("illegal data count.")
     }
-    res := btree.show()
+    res := btree.Show()
     //print(res)
     exp := "[35(1),71(1),107(1),]\n"
     exp += "-[5(2),11(1),17(1),23(1),29(1),]\n"
@@ -664,7 +710,7 @@ func TestBtreeDelete(t *testing.T) {
     if btree.DataCount() != 155 {
         t.Error("illegal data count.")
     }
-    res = btree.show()
+    res = btree.Show()
     //print(res)
     
     
@@ -675,8 +721,8 @@ func TestBtreeDelete(t *testing.T) {
     if btree.DataCount() != 153 {
         t.Error("illegal data count.")
     }
-    res = btree.show()
-    print(res)
+    res = btree.Show()
+    //print(res)
     
     delCnt = btree.Delete(7)
     if delCnt != 1 {
@@ -685,8 +731,8 @@ func TestBtreeDelete(t *testing.T) {
     if btree.DataCount() != 152 {
         t.Error("illegal data count.")
     }
-    res = btree.show()
-    print(res)
+    res = btree.Show()
+    //print(res)
     
     delCnt = btree.Delete(7)
     if delCnt != 0 {
@@ -696,3 +742,4 @@ func TestBtreeDelete(t *testing.T) {
         t.Error("illegal data count.")
     }
 }
+

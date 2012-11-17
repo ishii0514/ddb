@@ -27,8 +27,8 @@ func(p *BtreeInteger) Get(row ROWNUM) (Integer,error){
 }
 
 //探索
-func(p *BtreeInteger) show() string{
-    return p.rootNode.show()
+func(p *BtreeInteger) Show() string{
+    return p.rootNode.Show()
 }
 //探索
 func(p *BtreeInteger) Search(searchValue Integer) []ROWNUM{
@@ -91,6 +91,7 @@ func createNode(t int) *node{
     newNode.values = make([]nodeValue,nodeSize+1)
     newNode.nodes = make([]*node,nodeSize+2)
     newNode.t = t
+    newNode.dataCount = 0
     return newNode
 }
 
@@ -196,7 +197,14 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
     }
     //内部接点
     if p.nodes[deletePos].dataCount <= p.t-1 {
-        //対象子ノードに要素が十分に無い場合    
+        //対象子ノードに要素が十分に無い場合
+        if deletePos < p.dataCount && p.nodes[deletePos+1]== nil {
+            print("deletePos=" + strconv.Itoa(deletePos) +",dataCount=" + strconv.Itoa(p.dataCount) + "\n")
+        }
+        if deletePos > 0 && p.nodes[deletePos-1]== nil {
+            print("deletePos=" + strconv.Itoa(deletePos) +",dataCount=" + strconv.Itoa(p.dataCount) + "\n")
+            print(p.Show())
+        }
         if deletePos < p.dataCount && p.nodes[deletePos+1].dataCount >= p.t {
             //右兄弟ノードに要素が十分ある
             //対象子ノード末尾に要素を挿入
@@ -257,9 +265,10 @@ func mergeNodes(leftNode *node,med nodeValue,rightNode *node) *node{
     mergeNode.dataCount +=1
     
     //右ノード代入
+    j := mergeNode.dataCount
     for i:= 0;i<rightNode.dataCount;i++ {
-        mergeNode.values[leftNode.dataCount + i] = rightNode.values[i]
-        mergeNode.nodes[leftNode.dataCount + i] = rightNode.nodes[i]
+        mergeNode.values[j + i] = rightNode.values[i]
+        mergeNode.nodes[j + i] = rightNode.nodes[i]
         mergeNode.dataCount +=1
     }
     //最後のノードポインタ
@@ -377,7 +386,6 @@ func(p *node) addHead(insertNodeValue nodeValue,newNode *node) {
 }
 
 //ノード内の値を削除する
-//TODO test
 func(p *node) deleteValue(deletePos int) ROWNUM {
     rows := len(p.values[deletePos].rows)
     for i:= deletePos ; i < p.dataCount-1;i++ {
@@ -398,10 +406,10 @@ func(p *node) removeHead() {
     p.deleteValue(0)
 }
 //ノードの末尾の値を削除する
-//nodesはdataCount+1番目が削除されるので、deleteValue。
+//nodesはdataCount番目が削除されるので、deleteVal。
 func(p *node) removeTail() {
-    p.values[p.dataCount] = nodeValue{}
-    p.nodes[p.dataCount+1] = nil
+    p.values[p.dataCount-1] = nodeValue{}
+    p.nodes[p.dataCount] = nil
     p.dataCount -= 1
 }
 //ノード配下の最大値をgetする
@@ -422,7 +430,7 @@ func(p *node) getMinValue() nodeValue{
 }
 
 //ノード内の状態を出力する
-func(p *node) show() string {
+func(p *node) Show() string {
     return p.showPadding(0)
 }
 func(p *node) showPadding(pad int) string {
@@ -439,7 +447,9 @@ func(p *node) showPadding(pad int) string {
     
     //子ノード
     for i:= 0;i < p.dataCount+1;i++ {
-        if p.nodes[i] != nil {
+        if p.nodes[i] == nil {
+            //res += padding+ "-nil\n"
+        } else {
             res += p.nodes[i].showPadding(pad+1)
         }
     }

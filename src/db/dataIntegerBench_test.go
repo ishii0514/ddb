@@ -10,7 +10,8 @@ import (
 
 
 //データ件数
-var DATA_CNT int = 10000000
+//var DATA_CNT int = 10000000
+var DATA_CNT int = 100
 //指定したデータ件数のArrayを生成
 func createDataArray(datanumber int) ArrayInteger {
     var dataarray  = ArrayInteger{}
@@ -21,7 +22,7 @@ func createDataArray(datanumber int) ArrayInteger {
 }
 //指定したデータ件数のBtreeを生成
 func createDataBtree(datanumber int) BtreeInteger {
-    data1  := CreateBtree(128)
+    data1  := CreateBtree(5)
     for i:=0;i<datanumber;i++ {
         data1.Insert(Integer(i))
     }
@@ -38,6 +39,7 @@ func randumValues(roopCnt int,upperNumber int) []Integer{
 }
 
 //Insertの計測
+/*
 func BenchmarkArrayIntegerInsert(b *testing.B) {
     var data1  = ArrayInteger{}
     for i:=0;i<b.N;i++ {
@@ -85,13 +87,14 @@ func BenchmarkBtreeIntegerSearch(b *testing.B) {
         data1.Search(v)
     }
 }
-
+*/
 //Deleteの計測
 func BenchmarkBtreeIntegerDelete(b *testing.B) {
     b.StopTimer()
     var data1  = createDataBtree(DATA_CNT)
     var seachValues = randumValues(b.N,DATA_CNT)
     b.StartTimer()
+    //print(data1.Show())
     for _, v := range seachValues {
         data1.Delete(v)
     }

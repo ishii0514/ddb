@@ -40,6 +40,7 @@ var tests =[]testing.InternalTest{
     {"db,TestCreateNewNode",db.TestCreateNewNode},
     {"db.TestClear",db.TestClear},
     {"db.TestDevideNode",db.TestDevideNode},
+    {"db.TestDeleteValue",db.TestDeleteValue},
     {"db.TestCreateNewRoot",db.TestCreateNewRoot},
     {"db.TestShow",db.TestShow},
     {"db.TestInsert",db.TestInsert},
