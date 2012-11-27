@@ -64,21 +64,34 @@ func createTnode(t int) *tnode{
 //Tnodeインサート
 //TODO test
 func(p *tnode) Insert(insertValue Integer,row ROWNUM) {
+	//TODO インサート後の処理
+	//TODO リバランス
 	//TODO 確認　子ノードがあればdataCount >0 か？
 	if p.leftNode != nil && insertValue > p.maxValue()  {
 		p.leftNode.Insert(insertValue,row)
 	} else if p.rightNode != nil && insertValue < p.minValue() {
 		p.rightNode.Insert(insertValue,row)
 	} else{
-		//TODO 本ノードでの処理
-		//TODO データ0件
-		p.insertValue(0,nodeValue{insertValue,[]ROWNUM{row}})
+		isMatch,pos := p.getPosition(insertValue)
+		if isMatch == true {
+			p.values[pos].rows = append(p.values[pos].rows,row)
+		} else {
+			//一致データなし
+			//データ0件の場合も
+			p.insertValue(pos,nodeValue{insertValue,[]ROWNUM{row}})
+		}
 	}
 }
 func(p *tnode) maxValue() Integer{
+	if p.dataCount == 0 {
+		return 0
+	}
 	return p.values[p.dataCount-1].key
 }
 func(p *tnode) minValue() Integer{
+	if p.dataCount == 0 {
+		return 0
+	}
 	return p.values[0].key
 }
 
