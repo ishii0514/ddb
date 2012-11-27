@@ -95,6 +95,21 @@ func createNode(t int) *node{
     return newNode
 }
 
+//ノード内の操作対象箇所を二分検索する
+func binarySearch(values []nodeValue,searchValue Integer,head int,tail int) (bool,int){
+    if head > tail {
+        return false,head
+    }
+    pivot := (head+tail)/2
+    
+    if values[pivot].key == searchValue {
+        return true,pivot
+    } else if values[pivot].key > searchValue {
+        return binarySearch(values,searchValue,head,pivot-1)
+    }
+    return binarySearch(values,searchValue,pivot+1,tail)
+}
+
 
 type nodeValue struct{
     key Integer
@@ -336,17 +351,7 @@ func(p *node) linearSearch(searchValue Integer) (bool,int){
 }
 //ノード内の操作対象箇所を二分検索する
 func(p *node) binarySearch(searchValue Integer,head int,tail int) (bool,int){
-    if head > tail {
-        return false,head
-    }
-    pivot := (head+tail)/2
-    
-    if p.values[pivot].key == searchValue {
-        return true,pivot
-    } else if p.values[pivot].key > searchValue {
-        return p.binarySearch(searchValue,head,pivot-1)
-    }
-    return p.binarySearch(searchValue,pivot+1,tail)
+	return binarySearch(p.values,searchValue,head,tail)
 }
 
 //ノード内に値を挿入する

@@ -64,18 +64,15 @@ func createTnode(t int) *tnode{
 //Tnodeインサート
 //TODO test
 func(p *tnode) Insert(insertValue Integer,row ROWNUM) {
-	if p.dataCount == 0 {
-		//TODO データ0件
-		//p.insertValue(0,nodeValue{insertValue,[]ROWNUM{row}})
-		return
-	}
-	//TODO 子ノードがない場合
-	if insertValue > p.maxValue() && p.leftNode != nil {
+	//TODO 確認　子ノードがあればdataCount >0 か？
+	if p.leftNode != nil && insertValue > p.maxValue()  {
 		p.leftNode.Insert(insertValue,row)
-	} else if insertValue < p.minValue() && p.rightNode != nil {
+	} else if p.rightNode != nil && insertValue < p.minValue() {
 		p.rightNode.Insert(insertValue,row)
 	} else{
 		//TODO 本ノードでの処理
+		//TODO データ0件
+		p.insertValue(0,nodeValue{insertValue,[]ROWNUM{row}})
 	}
 }
 func(p *tnode) maxValue() Integer{
@@ -92,4 +89,9 @@ func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {
     }
     p.values[insertPos] = insertNodeValue
     p.dataCount += 1
+}
+
+//ノード内の操作対象箇所を検索する
+func(p *tnode) getPosition(searchValue Integer) (bool,int) {
+    return binarySearch(p.values,searchValue,0,p.dataCount-1)
 }
