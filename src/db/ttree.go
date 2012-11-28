@@ -61,6 +61,7 @@ func createTnode(t int) *tnode{
     newNode.rightNode = nil
     return newNode
 }
+
 //Tnodeインサート
 //TODO test
 //TODO リファクタ
@@ -89,18 +90,17 @@ func(p *tnode) Insert(insertNodeValue nodeValue) {
 
 	//オーバフローする
 	if pos == 0 {
-		p.leftNode = createTnode(p.t)
+		p.createLeftNode()
 		p.leftNode.Insert(insertNodeValue)
 	}else if pos == p.dataCount {
-		p.rightNode = createTnode(p.t)
+		p.createRightNode()
 		p.rightNode.Insert(insertNodeValue)
 	} else {
 		//minimumを取得して左ノードに再帰的にインサート
 		minNode := p.popNodeValue(0)
 		p.insertValue(pos,insertNodeValue)
 		if p.leftNode == nil {
-			//左ノードない場合作る
-			p.leftNode = createTnode(p.t)
+			p.createLeftNode()
 		}
 		p.leftNode.Insert(minNode)
 	}
@@ -149,4 +149,14 @@ func(p *tnode) deleteValue(deletePos int) ROWNUM {
 //ノード内の操作対象箇所を検索する
 func(p *tnode) getPosition(searchValue Integer) (bool,int) {
     return binarySearch(p.values,searchValue,0,p.dataCount-1)
+}
+//左ノードを作る
+func(p *tnode) createLeftNode(){
+    p.leftNode = createTnode(p.t)
+    p.leftNode.parentNode = p
+}
+//右ノードを作る
+func(p *tnode) createRightNode(){
+    p.rightNode = createTnode(p.t)
+    p.rightNode.parentNode = p
 }
