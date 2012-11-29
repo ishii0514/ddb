@@ -104,9 +104,69 @@ func(p *tnode) Insert(insertNodeValue nodeValue) {
 		}
 		p.leftNode.Insert(minNode)
 	}
+	//TODO リバランス
+}
+//Tnode削除
+//TODO test
+//TODO リバランス
+func(p *tnode) Delete(deleteNodeValue nodeValue) ROWNUM {
+	if p.leftNode != nil && deleteNodeValue.key > p.maxValue()  {
+		return p.leftNode.Delete(deleteNodeValue)
+	}
+	if p.rightNode != nil && deleteNodeValue.key < p.minValue() {
+		return p.rightNode.Delete(deleteNodeValue)
+	}
+	isMatch,pos := p.getPosition(deleteNodeValue.key)
+	if isMatch == false {
+		//該当データなし
+		return 0
+	}
+	//削除
+	deleteNum := p.deleteValue(pos)
+	if p.IsUnderFlow()  == false{
+		return deleteNum
+	}
+	
+	//under flow
+	if p.IsInternalNode() {
+		//GLBから値を持って来て先頭に補填する
+		p.insertValue(0,p.leftNode.popMaxNode())
+		return deleteNum
+	} else if p.IsLeafNode() {
+		//leaf
+		//TODO 0件なら本ノード削除して(5)へ
+		return deleteNum
+	} else {
+		//half-leaf
+		//TODO 子ノードとマージ可能ならマージして(5)へ
+		return deleteNum
+	}
+	//TODO リバランス
+	return 0
 }
 func(p *tnode) IsOverFlow() bool{
 	return p.dataCount  == p.t
+}
+func(p *tnode) IsUnderFlow() bool{
+	return p.dataCount  < p.t-3
+}
+func(p *tnode) IsInternalNode() bool{
+	return p.leftNode != nil && p.rightNode != nil
+}
+func(p *tnode) IsLeafNode() bool{
+	return p.leftNode == nil && p.rightNode == nil
+}
+//マージできる子ノードの有無
+//0なし 1左　2右　3両方
+func(p *tnode) CanMergeChildNode() int{
+	canMerge := 0
+	if p.leftNode != nil && p.dataCount + p.leftNode.dataCount  < p.t {
+		canMerge += 1
+	}
+	if p.rightNode != nil && p.dataCount + p.rightNode.dataCount  < p.t {
+		canMerge += 2
+	}
+	return canMerge
 }
 func(p *tnode) maxValue() Integer{
 	if p.dataCount == 0 {
@@ -126,6 +186,13 @@ func(p *tnode) popNodeValue(pos int) nodeValue{
 	p.deleteValue(pos)
 	return minNodeValue
 }
+//最大値をpop
+func(p *tnode) popMaxNode() nodeValue{
+	if p.rightNode != nil {
+		return p.rightNode.popMaxNode()
+	}
+	return p.popNodeValue(p.dataCount-1)
+}
 //ノード内に値を挿入する
 //TODO test　挿入位置がずれないか
 func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {
@@ -136,6 +203,7 @@ func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {
     p.dataCount += 1
 }
 //ノード内の値を削除する
+//TODO test　位置が正しくスライドするか
 func(p *tnode) deleteValue(deletePos int) ROWNUM {
     rows := len(p.values[deletePos].rows)
     for i:= deletePos ; i < p.dataCount-1;i++ {
