@@ -104,17 +104,24 @@ func(p *tnode) Insert(insertNodeValue nodeValue) {
 		}
 		p.leftNode.Insert(minNode)
 	}
-	//TODO リバランス
 }
 //Tnode削除
 //TODO test
 //TODO リバランス
 func(p *tnode) Delete(deleteNodeValue nodeValue) ROWNUM {
 	if p.leftNode != nil && deleteNodeValue.key > p.maxValue()  {
-		return p.leftNode.Delete(deleteNodeValue)
+		deleteNum := p.leftNode.Delete(deleteNodeValue)
+		if p.leftNode.dataCount == 0 {
+			p.leftNode = nil
+		}
+		return deleteNum
 	}
 	if p.rightNode != nil && deleteNodeValue.key < p.minValue() {
-		return p.rightNode.Delete(deleteNodeValue)
+		deleteNum := p.rightNode.Delete(deleteNodeValue)
+		if p.rightNode.dataCount == 0 {
+			p.rightNode = nil
+		}
+		return deleteNum
 	}
 	isMatch,pos := p.getPosition(deleteNodeValue.key)
 	if isMatch == false {
@@ -123,32 +130,39 @@ func(p *tnode) Delete(deleteNodeValue nodeValue) ROWNUM {
 	}
 	//削除
 	deleteNum := p.deleteValue(pos)
-	if p.IsUnderFlow()  == false{
-		return deleteNum
+	//underflow時処理
+	p.forUnderFlow()
+	//TODO リバランス
+	return deleteNum
+}
+
+//underflow時の処理
+func(p *tnode) forUnderFlow() {
+	if p.IsUnderFlow() == false{
+		return
 	}
-	
-	//under flow
 	if p.IsInternalNode() {
 		//GLBから値を持って来て先頭に補填する
 		p.insertValue(0,p.leftNode.popMaxNode())
-		return deleteNum
 	} else if p.IsLeafNode() {
 		//leaf
-		//TODO 0件なら本ノード削除して(5)へ
-		return deleteNum
 	} else {
 		//half-leaf
-		//TODO 子ノードとマージ可能ならマージして(5)へ
-		return deleteNum
+		switch p.CanMergeChildNode() {
+			case MERGE_TYPE_LEFT:
+				p.mergeFromLeftNode()
+			case MERGE_TYPE_RIGHT:
+				p.mergeFromRightNode()
+		}
 	}
-	//TODO リバランス
-	return 0
 }
+//次に挿入したらOverFlowするか
 func(p *tnode) IsOverFlow() bool{
 	return p.dataCount  == p.t
 }
+//under flowしているか
 func(p *tnode) IsUnderFlow() bool{
-	return p.dataCount  < p.t-3
+	return p.dataCount  <= p.t-3
 }
 func(p *tnode) IsInternalNode() bool{
 	return p.leftNode != nil && p.rightNode != nil
@@ -158,13 +172,13 @@ func(p *tnode) IsLeafNode() bool{
 }
 //マージできる子ノードの有無
 //0なし 1左　2右　3両方
-func(p *tnode) CanMergeChildNode() int{
-	canMerge := 0
-	if p.leftNode != nil && p.dataCount + p.leftNode.dataCount  < p.t {
-		canMerge += 1
+func(p *tnode) CanMergeChildNode() MergeType{
+	canMerge := MERGE_TYPE_NONE
+	if p.leftNode != nil && p.dataCount + p.leftNode.dataCount  <= p.t {
+		canMerge += MERGE_TYPE_LEFT
 	}
-	if p.rightNode != nil && p.dataCount + p.rightNode.dataCount  < p.t {
-		canMerge += 2
+	if p.rightNode != nil && p.dataCount + p.rightNode.dataCount  <= p.t {
+		canMerge += MERGE_TYPE_RIGHT
 	}
 	return canMerge
 }
@@ -187,11 +201,18 @@ func(p *tnode) popNodeValue(pos int) nodeValue{
 	return minNodeValue
 }
 //最大値をpop
+//TODOリバランス
 func(p *tnode) popMaxNode() nodeValue{
 	if p.rightNode != nil {
-		return p.rightNode.popMaxNode()
+		retNode := p.rightNode.popMaxNode()
+		if p.rightNode.dataCount == 0 {
+			p.rightNode = nil
+		}
+		return retNode
 	}
-	return p.popNodeValue(p.dataCount-1)
+	retNode := p.popNodeValue(p.dataCount-1)
+	p.forUnderFlow()
+	return retNode
 }
 //ノード内に値を挿入する
 //TODO test　挿入位置がずれないか
@@ -227,4 +248,37 @@ func(p *tnode) createLeftNode(){
 func(p *tnode) createRightNode(){
     p.rightNode = createTnode(p.t)
     p.rightNode.parentNode = p
+}
+
+//左子ノードからマージ
+func (p *tnode) mergeFromLeftNode(){
+	p.mergeHead(p.leftNode)
+	p.rightNode = p.leftNode.rightNode	
+	p.leftNode = p.leftNode.leftNode
+	
+}
+//右子ノードからマージ
+func (p *tnode) mergeFromRightNode(){
+	p.mergeTail(p.rightNode)
+	p.leftNode = p.rightNode.leftNode
+	p.rightNode = p.rightNode.rightNode	
+}
+//対象ノードを後ろ側にマージする
+func (p *tnode) mergeTail(srcNode *tnode){
+	cnt := p.dataCount
+	for i:= 0; i < srcNode.dataCount ; i++{
+		p.values[cnt+i] = srcNode.values[i]
+	}
+	p.dataCount = p.dataCount + srcNode.dataCount
+}
+//対象ノードを前側にマージする
+func (p *tnode) mergeHead(srcNode *tnode){
+	cnt := srcNode.dataCount
+	for i:= 0; i < p.dataCount ; i++{
+		p.values[cnt+i] = p.values[i]
+	}
+	for i:= 0; i < srcNode.dataCount ; i++{
+		p.values[i] = srcNode.values[i]
+	}
+	p.dataCount = p.dataCount + srcNode.dataCount
 }

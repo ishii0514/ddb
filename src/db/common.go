@@ -38,3 +38,12 @@ const (
 	COLUMN_TYPE_INTEGER ColumnType = iota
 	COLUMN_TYPE_STRING  ColumnType = iota
 )
+
+//ttreeのMergeを表す定数
+type MergeType int
+const (
+	MERGE_TYPE_NONE MergeType = iota	//0
+	MERGE_TYPE_LEFT MergeType = iota	//1
+	MERGE_TYPE_RIGHT  MergeType = iota	//2
+	MERGE_TYPE_BOTH  MergeType = iota	//3
+)
