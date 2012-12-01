@@ -282,3 +282,35 @@ func (p *tnode) mergeHead(srcNode *tnode){
 	}
 	p.dataCount = p.dataCount + srcNode.dataCount
 }
+//LLローテーション
+func rotationLL(root *tnode) *tnode{
+	//新たにrootになる
+	newRoot := root.leftNode
+	
+	//左子を付け替え
+	root.leftNode = newRoot.rightNode
+	root.leftNode.parentNode = root
+	
+	//親を付け替え
+	newRoot.parentNode = root.parentNode
+	root.parentNode = newRoot
+	newRoot.rightNode = root
+	
+	return newRoot
+}
+//RRローテーション
+func rotationRR(root *tnode) *tnode{
+	//新たにrootになる
+	newRoot := root.rightNode
+	
+	//左子を付け替え
+	root.rightNode = newRoot.leftNode
+	root.rightNode.parentNode = root
+	
+	//親を付け替え
+	newRoot.parentNode = root.parentNode
+	root.parentNode = newRoot
+	newRoot.rightNode = root
+	
+	return newRoot
+}
