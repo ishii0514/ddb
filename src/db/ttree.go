@@ -183,15 +183,9 @@ func(p *tnode) CanMergeChildNode() MergeType{
 	return canMerge
 }
 func(p *tnode) maxValue() Integer{
-	if p.dataCount == 0 {
-		return 0
-	}
 	return p.values[p.dataCount-1].key
 }
 func(p *tnode) minValue() Integer{
-	if p.dataCount == 0 {
-		return 0
-	}
 	return p.values[0].key
 }
 //指定ポジションをpop
@@ -264,7 +258,7 @@ func (p *tnode) mergeFromRightNode(){
 	p.rightNode = p.rightNode.rightNode	
 }
 //対象ノードを後ろ側にマージする
-//start番目以降を移す
+//srcNodeのstart番目以降をマージ
 func (p *tnode) mergeTail(srcNode *tnode,start int){
 	cnt := p.dataCount
 	for i:= start; i < srcNode.dataCount ; i++{
@@ -273,7 +267,7 @@ func (p *tnode) mergeTail(srcNode *tnode,start int){
 	p.dataCount = p.dataCount + srcNode.dataCount - start
 }
 //対象ノードを前側にマージする
-//start番目以降を移す
+//srcNodeのstart番目以降をマージ
 func (p *tnode) mergeHead(srcNode *tnode,start int){
 	cnt := srcNode.dataCount - start
 	for i:= 0; i < p.dataCount ; i++{
