@@ -252,36 +252,46 @@ func(p *tnode) createRightNode(){
 
 //左子ノードからマージ
 func (p *tnode) mergeFromLeftNode(){
-	p.mergeHead(p.leftNode)
+	p.mergeHead(p.leftNode,0)
 	p.rightNode = p.leftNode.rightNode	
 	p.leftNode = p.leftNode.leftNode
 	
 }
 //右子ノードからマージ
 func (p *tnode) mergeFromRightNode(){
-	p.mergeTail(p.rightNode)
+	p.mergeTail(p.rightNode,0)
 	p.leftNode = p.rightNode.leftNode
 	p.rightNode = p.rightNode.rightNode	
 }
 //対象ノードを後ろ側にマージする
-func (p *tnode) mergeTail(srcNode *tnode){
+//start番目以降を移す
+func (p *tnode) mergeTail(srcNode *tnode,start int){
 	cnt := p.dataCount
-	for i:= 0; i < srcNode.dataCount ; i++{
-		p.values[cnt+i] = srcNode.values[i]
+	for i:= start; i < srcNode.dataCount ; i++{
+		p.values[cnt+i-start] = srcNode.values[i]
 	}
-	p.dataCount = p.dataCount + srcNode.dataCount
+	p.dataCount = p.dataCount + srcNode.dataCount - start
 }
 //対象ノードを前側にマージする
-func (p *tnode) mergeHead(srcNode *tnode){
-	cnt := srcNode.dataCount
+//start番目以降を移す
+func (p *tnode) mergeHead(srcNode *tnode,start int){
+	cnt := srcNode.dataCount - start
 	for i:= 0; i < p.dataCount ; i++{
 		p.values[cnt+i] = p.values[i]
 	}
-	for i:= 0; i < srcNode.dataCount ; i++{
-		p.values[i] = srcNode.values[i]
+	for i:= start; i < srcNode.dataCount ; i++{
+		p.values[i-start] = srcNode.values[i]
 	}
-	p.dataCount = p.dataCount + srcNode.dataCount
+	p.dataCount = p.dataCount + srcNode.dataCount - start
 }
+//start番目以降をクリアする
+func (p *tnode) clear(start int){
+	for i:= start ;i < p.dataCount;i++ {
+		p.values[i] = nodeValue{0,nil}
+	}
+	p.dataCount =start
+}
+
 //LLローテーション
 func rotationLL(root *tnode) *tnode{
 	//新たにrootになる
@@ -311,6 +321,70 @@ func rotationRR(root *tnode) *tnode{
 	newRoot.parentNode = root.parentNode
 	root.parentNode = newRoot
 	newRoot.rightNode = root
+	
+	return newRoot
+}
+//LRローテーション
+func rotationLR(root *tnode) *tnode{
+	//新たにrootになる
+	newRoot := root.leftNode.rightNode
+	//新たなleftNode
+	newLeft := root.leftNode
+	
+	//leftNode(B)の付け替え
+	newLeft.rightNode = newRoot.leftNode
+	newRoot.leftNode.parentNode = newLeft
+	
+	//rootNode(A)の付け替え
+	root.leftNode = newRoot.rightNode
+	newRoot.rightNode.parentNode = root
+	
+	//newRoot(C)の付け替え
+	newRoot.parentNode = root.parentNode
+	
+	newRoot.leftNode = newLeft
+	newLeft.parentNode = newRoot
+	
+	newRoot.rightNode = root
+	root.parentNode = newRoot
+	
+	//special lotation
+	if newRoot.dataCount == 1 {
+		newRoot.mergeHead(newLeft,1)
+		newLeft.clear(1)
+	}
+	
+	return newRoot
+}
+//RLローテーション
+func rotationRL(root *tnode) *tnode{
+	//新たにrootになる
+	newRoot := root.rightNode.leftNode
+	//新たなrightNode
+	newRight := root.rightNode
+	
+	//rightNode(B)の付け替え
+	newRight.leftNode = newRoot.rightNode
+	newRoot.rightNode.parentNode = newRight
+	
+	//rootNode(A)の付け替え
+	root.rightNode = newRoot.leftNode
+	newRoot.leftNode.parentNode = root
+	
+	//newRoot(C)の付け替え
+	newRoot.parentNode = root.parentNode
+	
+	newRoot.rightNode = newRight
+	newRight.parentNode = newRoot
+	
+	newRoot.leftNode = root
+	root.parentNode = newRoot
+	
+	//special lotation
+	if newRoot.dataCount == 1 {
+		newRoot.mergeTail(newRight,1)
+		newRight.clear(1)
+	}
 	
 	return newRoot
 }
