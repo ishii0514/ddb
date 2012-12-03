@@ -46,6 +46,21 @@ var tests =[]testing.InternalTest{
     {"db.TestInsert",db.TestInsert},
     {"db.TestBtreeInsert",db.TestBtreeInsert},
     {"db.TestBtreeDelete",db.TestBtreeDelete},
+    {"db.TestCanMergeChildNode",db.TestCanMergeChildNode},
+    {"db.TestInsertValueT",db.TestInsertValueT},
+    {"db.TestInsertValueT2",db.TestInsertValueT2},
+    {"db.TestDeleteValueT",db.TestDeleteValueT},
+    {"db.TestMaxMinValue",db.TestMaxMinValue},
+    {"db.TestPopNodeValue",db.TestPopNodeValue},
+    {"db.TestMergeFromLeftNode",db.TestMergeFromLeftNode},
+    {"db.TestMergeFromRightNode",db.TestMergeFromRightNode},
+    {"db.TestMergeTail",db.TestMergeTail},
+    {"db.TestMergeHead",db.TestMergeHead},
+    {"db.TestClearT",db.TestClearT},
+    {"db.TestRotationLL",db.TestRotationLL},
+    {"db.TestRotationRR",db.TestRotationRR},
+    {"db.TestRotationLR",db.TestRotationLR},
+    {"db.TestRotationRL",db.TestRotationRL},
 }
 
 var benchmarks =[]testing.InternalBenchmark{

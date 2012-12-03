@@ -148,7 +148,7 @@ func(p *tnode) forUnderFlow() {
 		//leaf
 	} else {
 		//half-leaf
-		switch p.CanMergeChildNode() {
+		switch p.canMergeChildNode() {
 			case MERGE_TYPE_LEFT:
 				p.mergeFromLeftNode()
 			case MERGE_TYPE_RIGHT:
@@ -172,7 +172,7 @@ func(p *tnode) IsLeafNode() bool{
 }
 //マージできる子ノードの有無
 //0なし 1左　2右　3両方
-func(p *tnode) CanMergeChildNode() MergeType{
+func(p *tnode) canMergeChildNode() MergeType{
 	canMerge := MERGE_TYPE_NONE
 	if p.leftNode != nil && p.dataCount + p.leftNode.dataCount  <= p.t {
 		canMerge += MERGE_TYPE_LEFT
@@ -196,6 +196,7 @@ func(p *tnode) popNodeValue(pos int) nodeValue{
 }
 //最大値をpop
 //TODOリバランス
+//TODO test
 func(p *tnode) popMaxNode() nodeValue{
 	if p.rightNode != nil {
 		retNode := p.rightNode.popMaxNode()
@@ -209,7 +210,6 @@ func(p *tnode) popMaxNode() nodeValue{
 	return retNode
 }
 //ノード内に値を挿入する
-//TODO test　挿入位置がずれないか
 func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {
     for i:= p.dataCount;i > insertPos;i-- {
         p.values[i] = p.values[i-1]
@@ -218,7 +218,6 @@ func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {
     p.dataCount += 1
 }
 //ノード内の値を削除する
-//TODO test　位置が正しくスライドするか
 func(p *tnode) deleteValue(deletePos int) ROWNUM {
     rows := len(p.values[deletePos].rows)
     for i:= deletePos ; i < p.dataCount-1;i++ {
@@ -265,6 +264,8 @@ func (p *tnode) mergeTail(srcNode *tnode,start int){
 		p.values[cnt+i-start] = srcNode.values[i]
 	}
 	p.dataCount = p.dataCount + srcNode.dataCount - start
+	
+	srcNode.clear(start)
 }
 //対象ノードを前側にマージする
 //srcNodeのstart番目以降をマージ
@@ -277,6 +278,8 @@ func (p *tnode) mergeHead(srcNode *tnode,start int){
 		p.values[i-start] = srcNode.values[i]
 	}
 	p.dataCount = p.dataCount + srcNode.dataCount - start
+	
+	srcNode.clear(start)
 }
 //start番目以降をクリアする
 func (p *tnode) clear(start int){
@@ -307,14 +310,14 @@ func rotationRR(root *tnode) *tnode{
 	//新たにrootになる
 	newRoot := root.rightNode
 	
-	//左子を付け替え
+	//右子を付け替え
 	root.rightNode = newRoot.leftNode
 	root.rightNode.parentNode = root
 	
 	//親を付け替え
 	newRoot.parentNode = root.parentNode
 	root.parentNode = newRoot
-	newRoot.rightNode = root
+	newRoot.leftNode = root
 	
 	return newRoot
 }
@@ -345,7 +348,6 @@ func rotationLR(root *tnode) *tnode{
 	//special lotation
 	if newRoot.dataCount == 1 {
 		newRoot.mergeHead(newLeft,1)
-		newLeft.clear(1)
 	}
 	
 	return newRoot
@@ -377,7 +379,6 @@ func rotationRL(root *tnode) *tnode{
 	//special lotation
 	if newRoot.dataCount == 1 {
 		newRoot.mergeTail(newRight,1)
-		newRight.clear(1)
 	}
 	
 	return newRoot
