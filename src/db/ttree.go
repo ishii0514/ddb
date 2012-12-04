@@ -65,9 +65,7 @@ func createTnode(t int) *tnode{
 
 //Tnodeインサート
 //戻り値　ノード追加発生,新たなルートノード
-//TODO test
 //TODO リファクタ
-//TODO リバランス
 func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
 	if p.leftNode != nil && insertNodeValue.key < p.minValue()  {
 		add,_ := p.leftNode.Insert(insertNodeValue)
@@ -408,7 +406,7 @@ func rotationRL(root *tnode) *tnode{
 }
 
 //リバランスチェックし必要ならリバランス
-//リバランスしたらfalse
+//戻り値　リバランスしたらfalse,新しいroot
 func rebalance(root *tnode) (bool,*tnode){
 	newRoot :=root
 	def := root.leftDepth() - root.rightDepth()
