@@ -47,3 +47,11 @@ const (
 	MERGE_TYPE_RIGHT  MergeType = iota	//2
 	MERGE_TYPE_BOTH  MergeType = iota	//3
 )
+//ttreeのMergeを表す定数
+type ChildType int
+const (
+	NONE ChildType = iota	//0
+	LEFT ChildType = iota	//1
+	RIGHT ChildType = iota	//2
+	
+)

@@ -1,7 +1,8 @@
 package db
 
 import (
-
+    "strings"
+    "strconv"
 )
 
 //Tteeデータ構造
@@ -63,47 +64,59 @@ func createTnode(t int) *tnode{
 }
 
 //Tnodeインサート
+//戻り値　ノード追加発生,新たなルートノード
 //TODO test
 //TODO リファクタ
 //TODO リバランス
-func(p *tnode) Insert(insertNodeValue nodeValue) {
-	if p.leftNode != nil && insertNodeValue.key > p.maxValue()  {
-		p.leftNode.Insert(insertNodeValue)
-		return
+func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
+	if p.leftNode != nil && insertNodeValue.key < p.minValue()  {
+		add,_ := p.leftNode.Insert(insertNodeValue)
+		if add {
+			return rebalance(p)
+		}
+		return false,p
 	}
-	if p.rightNode != nil && insertNodeValue.key < p.minValue() {
-		p.rightNode.Insert(insertNodeValue)
-		return
+	if p.rightNode != nil && insertNodeValue.key > p.maxValue() {
+		add,_ := p.rightNode.Insert(insertNodeValue)
+		if add {
+			return rebalance(p)
+		}
+		return false,p
 	}
 	isMatch,pos := p.getPosition(insertNodeValue.key)
 	if isMatch == true {
 		p.values[pos].rows = append(p.values[pos].rows,insertNodeValue.rows...)
-		return
+		return false,p
 	}
 	
 	//新規データ
 	if p.IsOverFlow() == false {
 		//オーバーフローなし
 		p.insertValue(pos,insertNodeValue)
-		return
+		return false,p
 	}
 
 	//オーバフローする
 	if pos == 0 {
 		p.createLeftNode()
 		p.leftNode.Insert(insertNodeValue)
+		return true,p
 	}else if pos == p.dataCount {
 		p.createRightNode()
 		p.rightNode.Insert(insertNodeValue)
+		return true,p
 	} else {
 		//minimumを取得して左ノードに再帰的にインサート
 		minNode := p.popNodeValue(0)
-		p.insertValue(pos,insertNodeValue)
-		if p.leftNode == nil {
-			p.createLeftNode()
+		p.insertValue(pos-1,insertNodeValue)
+		//自分自身に再帰
+		add,_ := p.Insert(minNode)
+		if add {
+			return rebalance(p)
 		}
-		p.leftNode.Insert(minNode)
+		return false,p
 	}
+	return false,p
 }
 //Tnode削除
 //TODO test
@@ -296,7 +309,9 @@ func rotationLL(root *tnode) *tnode{
 	
 	//左子を付け替え
 	root.leftNode = newRoot.rightNode
-	root.leftNode.parentNode = root
+	if root.leftNode != nil {
+		root.leftNode.parentNode = root
+	}
 	
 	//親を付け替え
 	newRoot.parentNode = root.parentNode
@@ -312,7 +327,9 @@ func rotationRR(root *tnode) *tnode{
 	
 	//右子を付け替え
 	root.rightNode = newRoot.leftNode
-	root.rightNode.parentNode = root
+	if root.rightNode != nil {
+		root.rightNode.parentNode = root
+	}
 	
 	//親を付け替え
 	newRoot.parentNode = root.parentNode
@@ -330,11 +347,15 @@ func rotationLR(root *tnode) *tnode{
 	
 	//leftNode(B)の付け替え
 	newLeft.rightNode = newRoot.leftNode
-	newRoot.leftNode.parentNode = newLeft
+	if newRoot.leftNode != nil {
+		newRoot.leftNode.parentNode = newLeft
+	}
 	
 	//rootNode(A)の付け替え
 	root.leftNode = newRoot.rightNode
-	newRoot.rightNode.parentNode = root
+	if newRoot.rightNode != nil {
+		newRoot.rightNode.parentNode = root
+	}
 	
 	//newRoot(C)の付け替え
 	newRoot.parentNode = root.parentNode
@@ -361,12 +382,14 @@ func rotationRL(root *tnode) *tnode{
 	
 	//rightNode(B)の付け替え
 	newRight.leftNode = newRoot.rightNode
-	newRoot.rightNode.parentNode = newRight
-	
+	if newRoot.rightNode != nil {
+		newRoot.rightNode.parentNode = newRight
+	}
 	//rootNode(A)の付け替え
 	root.rightNode = newRoot.leftNode
-	newRoot.leftNode.parentNode = root
-	
+	if newRoot.leftNode != nil {
+		newRoot.leftNode.parentNode = root
+	}
 	//newRoot(C)の付け替え
 	newRoot.parentNode = root.parentNode
 	
@@ -382,4 +405,93 @@ func rotationRL(root *tnode) *tnode{
 	}
 	
 	return newRoot
+}
+
+//リバランスチェックし必要ならリバランス
+//リバランスしたらfalse
+func rebalance(root *tnode) (bool,*tnode){
+	newRoot :=root
+	def := root.leftDepth() - root.rightDepth()
+	if def > -2 && def < 2 {
+		//差が2以内
+		return true,newRoot
+	}
+	//親ノード退避
+	parent := root.parentNode
+	
+	if def > 0 {
+		//左が深い
+		if root.leftNode.leftDepth() >= root.leftNode.rightDepth() {
+			//LL回転
+			newRoot = rotationLL(root)
+		} else {
+			//LR回転
+			newRoot = rotationLR(root)
+		}
+	}else {
+		//右が深い
+		if root.rightNode.rightDepth() >= root.rightNode.leftDepth() {
+			//RR回転
+			newRoot = rotationRR(root)
+		} else {
+			//RL回転
+			newRoot = rotationRL(root)
+		}
+	}
+	
+	//親ノードのポインタ付け替え
+	if parent != nil {
+		if parent.leftNode == root {
+			parent.leftNode = newRoot
+		} else if parent.rightNode == root {
+			parent.rightNode = newRoot
+		}
+	}
+	return false,newRoot
+}
+func (p *tnode) leftDepth() int{
+	if p.leftNode != nil {
+		return p.leftNode.depth() + 1
+	}
+	return 0
+}
+func (p *tnode) rightDepth() int{
+	if p.rightNode != nil {
+		return p.rightNode.depth() + 1
+	}
+	return 0
+}
+//木の深さを取得する
+func (p *tnode) depth() int{
+	leftDepth := p.leftDepth()
+	rightDepth := p.rightDepth()
+	//深い方
+	if leftDepth > rightDepth {
+		return leftDepth
+	}
+	return rightDepth
+}
+
+//ノード内の状態を出力する
+func(p *tnode) Show() string {
+    return p.showPadding(0)
+}
+func(p *tnode) showPadding(pad int) string {
+    res := ""
+    padding := strings.Repeat("-", pad)
+    
+    res += padding + "["
+    for i:= 0;i < p.dataCount;i++ {
+        res += strconv.Itoa(int(p.values[i].key)) + "("
+        res += strconv.Itoa(len(p.values[i].rows))
+        res += "),"
+    }
+    res += "]\n"
+    if p.leftNode !=nil {
+    	res += "l:" + p.leftNode.showPadding(pad+1)
+    }
+    if p.rightNode !=nil {
+    	res += "r:" + p.rightNode.showPadding(pad+1)
+    } 
+    return res
 }

@@ -627,3 +627,73 @@ func TestRotationRL(t *testing.T) {
 	    t.Error("illegal right right parent")
     }
 }
+func TestGetPositionT(t *testing.T) {
+	root := createTnode(3)
+	root.Insert(nodeValue{8,[]ROWNUM{1}})
+	root.Insert(nodeValue{7,[]ROWNUM{1}})
+	root.Insert(nodeValue{6,[]ROWNUM{1}})
+	
+	match,pos := root.getPosition(5)
+	if match != false {
+		t.Error("illegal match")
+	}
+	if pos != 0 {
+		t.Error("illegal pos")
+	}
+}
+func TestDepth(t *testing.T) {
+	root := createTnode(5)
+    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValue{4,[]ROWNUM{1}})
+    right := createTnode(5)
+    right.insertValue(0,nodeValue{20,[]ROWNUM{1}})
+    right.insertValue(0,nodeValue{10,[]ROWNUM{1}})
+    root.rightNode = right
+    right.parentNode = root
+        
+	if root.depth() != 1 {
+		t.Error("illegal root depth")
+	}
+	if right.depth() != 0 {
+		t.Error("illegal right depth")
+	}
+	left := createTnode(5)
+	root.leftNode = left
+    left.parentNode = root
+	leftleft := createTnode(5)
+	left.leftNode = leftleft
+    leftleft.parentNode = left
+	if root.depth() != 2 {
+		t.Error("illegal root depth")
+	}
+}
+func TestShowT(t *testing.T) {
+	root := createTnode(3)
+	_,root = root.Insert(nodeValue{8,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValue{7,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValue{5,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValue{6,[]ROWNUM{1}})
+	
+	res := root.Show()
+	exp := "[6(1),7(1),8(1),]\n"
+	exp += "l:-[5(1),]\n"
+	if res != exp {
+		t.Error("illegal insert")
+	}
+	
+	_,root = root.Insert(nodeValue{4,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValue{3,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValue{2,[]ROWNUM{1}})
+	root.Insert(nodeValue{1,[]ROWNUM{1}})
+	root.Insert(nodeValue{0,[]ROWNUM{1}})
+	root.Insert(nodeValue{9,[]ROWNUM{1}})	
+	res = root.Show()
+	print(res)
+	exp = "[3(1),4(1),5(1),]\n"
+	exp += "l:-[0(1),1(1),2(1),]\n"
+	exp += "r:-[6(1),7(1),8(1),]\n"
+	exp += "r:--[9(1),]\n"
+	if res != exp {
+		t.Error("illegal insert 2")
+	}
+}

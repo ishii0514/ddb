@@ -61,6 +61,9 @@ var tests =[]testing.InternalTest{
     {"db.TestRotationRR",db.TestRotationRR},
     {"db.TestRotationLR",db.TestRotationLR},
     {"db.TestRotationRL",db.TestRotationRL},
+    {"db.TestGetPositionT",db.TestGetPositionT},
+    {"db.TestShowT",db.TestShowT},
+    {"db.TestDepth",db.TestDepth},
 }
 
 var benchmarks =[]testing.InternalBenchmark{
