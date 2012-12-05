@@ -25,15 +25,27 @@ func(p *TtreeInteger) DataCount() ROWNUM{
 func(p *TtreeInteger) Get(row ROWNUM) (Integer,error){
     return 0,nil
 }
+//探索
+func(p *TtreeInteger) Search(searchValue Integer) []ROWNUM{
+    return p.rootNode.Search(searchValue)
+}
 //挿入
 func(p *TtreeInteger) Insert(insertValue Integer) ROWNUM{
-	//TODO tnode.insert
+	_,p.rootNode = p.rootNode.Insert(nodeValue{insertValue,[]ROWNUM{p.rowid}})
     p.dataCount += 1
     p.rowid += 1
     return ROWNUM(1)
 }
-
-
+func(p *TtreeInteger) Delete(deleteValue Integer) ROWNUM{
+	var deleteRows ROWNUM = 0
+    deleteRows,_,p.rootNode = p.rootNode.Delete(deleteValue)
+    p.dataCount = p.dataCount - deleteRows
+    return deleteRows
+}
+//探索
+func(p *TtreeInteger) Show() string{
+    return p.rootNode.Show()
+}
 //Tツリーのノード
 type tnode struct{
     //ノードサイズ
@@ -62,7 +74,21 @@ func createTnode(t int) *tnode{
     newNode.rightNode = nil
     return newNode
 }
-
+//探索
+//TODO test
+func(p *tnode) Search(searchValue Integer) []ROWNUM{
+    if p.leftNode != nil && searchValue < p.minValue()  {
+		return p.leftNode.Search(searchValue)
+	}
+	if p.rightNode != nil && searchValue > p.maxValue() {
+		return p.rightNode.Search(searchValue)
+	}
+	isMatch,pos := p.getPosition(searchValue)
+	if isMatch == true {
+		return p.values[pos].rows
+	}
+	return []ROWNUM{}
+}
 //Tnodeインサート
 //戻り値　ノード追加発生,新たなルートノード
 //TODO リファクタ
@@ -120,56 +146,89 @@ func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
 	}
 	return false,p
 }
+
+
 //Tnode削除
 //TODO test
-//TODO リバランス
-func(p *tnode) Delete(deleteNodeValue nodeValue) ROWNUM {
-	if p.leftNode != nil && deleteNodeValue.key > p.maxValue()  {
-		deleteNum := p.leftNode.Delete(deleteNodeValue)
-		if p.leftNode.dataCount == 0 {
-			p.leftNode = nil
-		}
-		return deleteNum
+func(p *tnode) Delete(deleteValue Integer) (ROWNUM,bool,*tnode) {
+	if p.leftNode != nil && deleteValue < p.minValue()  {
+		deleteNum,del,_ := p.leftNode.Delete(deleteValue)
+		delflg,newRoot := p.doAfterChildDelete(LEFT,del)
+		return deleteNum,delflg,newRoot
 	}
-	if p.rightNode != nil && deleteNodeValue.key < p.minValue() {
-		deleteNum := p.rightNode.Delete(deleteNodeValue)
-		if p.rightNode.dataCount == 0 {
-			p.rightNode = nil
-		}
-		return deleteNum
+	if p.rightNode != nil && deleteValue > p.maxValue() {
+		deleteNum,del,_ := p.rightNode.Delete(deleteValue)
+		delflg,newRoot := p.doAfterChildDelete(RIGHT,del)
+		return deleteNum,delflg,newRoot
 	}
-	isMatch,pos := p.getPosition(deleteNodeValue.key)
+	isMatch,pos := p.getPosition(deleteValue)
 	if isMatch == false {
 		//該当データなし
-		return 0
+		return 0,false,p
 	}
 	//削除
 	deleteNum := p.deleteValue(pos)
-	//underflow時処理
-	p.forUnderFlow()
-	//TODO リバランス
-	return deleteNum
+	if p.IsInternalNode() && p.IsUnderFlow()  {
+		//underflow時処理
+		glb,del,_ := p.leftNode.popMaxNode()
+		p.insertValue(0,glb)
+		delflg,newRoot := p.doAfterChildDelete(LEFT,del)
+		return deleteNum,delflg,newRoot
+	}
+	del := p.halfLeafMerge()
+	return deleteNum,del,p
+}
+//最大値をpop
+//TODO test
+func(p *tnode) popMaxNode() (nodeValue,bool,*tnode){
+	if p.rightNode != nil {
+		retNode,del,_ := p.rightNode.popMaxNode()
+		delflg,newRoot := p.doAfterChildDelete(RIGHT,del)
+		return retNode,delflg,newRoot
+	}
+	retNode := p.popNodeValue(p.dataCount-1)
+	del := p.halfLeafMerge()
+	return retNode,del,p
 }
 
-//underflow時の処理
-func(p *tnode) forUnderFlow() {
-	if p.IsUnderFlow() == false{
-		return
-	}
-	if p.IsInternalNode() {
-		//GLBから値を持って来て先頭に補填する
-		p.insertValue(0,p.leftNode.popMaxNode())
-	} else if p.IsLeafNode() {
-		//leaf
-	} else {
+//harfnodeのマージ
+//戻り値　ノードの削除発生
+func(p *tnode) halfLeafMerge() bool{
+	isDel := false
+	if p.IsHalfLeaf() {
 		//half-leaf
 		switch p.canMergeChildNode() {
 			case MERGE_TYPE_LEFT:
 				p.mergeFromLeftNode()
+				isDel = true
 			case MERGE_TYPE_RIGHT:
 				p.mergeFromRightNode()
+				isDel = true
 		}
 	}
+	return isDel
+}
+//子ノードのDelete実行後処理
+//空になったリーフの削除、リバランス
+func (p *tnode) doAfterChildDelete(child ChildType,del bool) (bool,*tnode){
+	newRoot := p
+	delflg := del
+	if child == LEFT {
+		if p.leftNode.dataCount == 0 {
+			p.leftNode = nil
+			delflg = true	
+		}
+	} else if child == RIGHT {
+		if p.rightNode.dataCount == 0 {
+			p.rightNode = nil
+			delflg = true	
+		}
+	}
+	//リバランス
+	if delflg {
+		_,newRoot = rebalance(p)		
+	}
+	return delflg,newRoot
 }
 //次に挿入したらOverFlowするか
 func(p *tnode) IsOverFlow() bool{
@@ -184,6 +243,9 @@ func(p *tnode) IsInternalNode() bool{
 }
 func(p *tnode) IsLeafNode() bool{
 	return p.leftNode == nil && p.rightNode == nil
+}
+func(p *tnode) IsHalfLeaf() bool{
+	return p.IsInternalNode() == false && p.IsLeafNode() == false
 }
 //マージできる子ノードの有無
 //0なし 1左　2右　3両方
@@ -208,21 +270,6 @@ func(p *tnode) popNodeValue(pos int) nodeValue{
 	minNodeValue := p.values[pos]
 	p.deleteValue(pos)
 	return minNodeValue
-}
-//最大値をpop
-//TODOリバランス
-//TODO test
-func(p *tnode) popMaxNode() nodeValue{
-	if p.rightNode != nil {
-		retNode := p.rightNode.popMaxNode()
-		if p.rightNode.dataCount == 0 {
-			p.rightNode = nil
-		}
-		return retNode
-	}
-	retNode := p.popNodeValue(p.dataCount-1)
-	p.forUnderFlow()
-	return retNode
 }
 //ノード内に値を挿入する
 func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {

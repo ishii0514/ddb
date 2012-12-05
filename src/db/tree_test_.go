@@ -688,12 +688,78 @@ func TestShowT(t *testing.T) {
 	root.Insert(nodeValue{0,[]ROWNUM{1}})
 	root.Insert(nodeValue{9,[]ROWNUM{1}})	
 	res = root.Show()
-	print(res)
+	//print(res)
 	exp = "[3(1),4(1),5(1),]\n"
 	exp += "l:-[0(1),1(1),2(1),]\n"
 	exp += "r:-[6(1),7(1),8(1),]\n"
 	exp += "r:--[9(1),]\n"
 	if res != exp {
 		t.Error("illegal insert 2")
+	}
+}
+func TestTreeInsert(t *testing.T) {
+	tree := CreateTtree(3)
+	tree.Insert(8)
+	tree.Insert(7)
+	tree.Insert(5)
+	tree.Insert(6)
+	
+	res := tree.Show()
+	exp := "[6(1),7(1),8(1),]\n"
+	exp += "l:-[5(1),]\n"
+	if res != exp {
+		t.Error("illegal insert")
+	}
+	tree.Insert(4)
+	tree.Insert(3)
+	tree.Insert(2)
+	tree.Insert(1)
+	tree.Insert(0)
+	tree.Insert(9)
+	
+	res = tree.Show()
+	//print(res)
+	exp = "[3(1),4(1),5(1),]\n"
+	exp += "l:-[0(1),1(1),2(1),]\n"
+	exp += "r:-[6(1),7(1),8(1),]\n"
+	exp += "r:--[9(1),]\n"
+	if res != exp {
+		t.Error("illegal insert 2")
+	}
+}
+
+func TestTreeDelete(t *testing.T) {
+	tree := CreateTtree(3)
+	tree.Insert(8)
+	tree.Insert(7)
+	tree.Insert(5)
+	tree.Insert(6)
+	tree.Insert(4)
+	tree.Insert(3)
+	tree.Insert(2)
+	tree.Insert(1)
+	tree.Insert(0)
+	tree.Insert(9)
+	
+	res := tree.Show()
+	print(res)
+	exp := "[3(1),4(1),5(1),]\n"
+	exp += "l:-[0(1),1(1),2(1),]\n"
+	exp += "r:-[6(1),7(1),8(1),]\n"
+	exp += "r:--[9(1),]\n"
+	if res != exp {
+		t.Error("illegal insert")
+	}
+	
+	tree.Delete(2)
+	tree.Delete(1)
+	tree.Delete(0)
+	res = tree.Show()
+	print(res)
+	exp = "[6(1),7(1),8(1),]\n"
+	exp += "l:-[3(1),4(1),5(1),]\n"
+	exp += "r:-[9(1),]\n"
+	if res != exp {
+		t.Error("illegal delete")
 	}
 }
