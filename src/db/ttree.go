@@ -107,8 +107,12 @@ func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
 		//minimumを取得して左ノードに再帰的にインサート
 		minNode := p.popNodeValue(0)
 		p.insertValue(pos-1,insertNodeValue)
-		//自分自身に再帰
-		add,_ := p.Insert(minNode)
+		if p.leftNode == nil {
+			p.createLeftNode()
+			p.leftNode.Insert(minNode)
+			return true,p
+		}
+		add,_ := p.leftNode.Insert(minNode)
 		if add {
 			return rebalance(p)
 		}
@@ -412,7 +416,7 @@ func rebalance(root *tnode) (bool,*tnode){
 	def := root.leftDepth() - root.rightDepth()
 	if def > -2 && def < 2 {
 		//差が2以内
-		return true,newRoot
+		return true,root
 	}
 	//親ノード退避
 	parent := root.parentNode
