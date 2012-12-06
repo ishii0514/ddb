@@ -2,6 +2,8 @@ package db
 
 import (
 	"testing"
+//	"math/rand"
+//	"strconv"
 )
 
 func TestInsertValueT(t *testing.T) {
@@ -728,7 +730,7 @@ func TestTreeInsert(t *testing.T) {
 	}
 }
 
-func TestTreeDelete(t *testing.T) {
+func TestTreeDeleteRRLotation(t *testing.T) {
 	tree := CreateTtree(3)
 	tree.Insert(8)
 	tree.Insert(7)
@@ -742,7 +744,7 @@ func TestTreeDelete(t *testing.T) {
 	tree.Insert(9)
 	
 	res := tree.Show()
-	print(res)
+	//print(res)
 	exp := "[3(1),4(1),5(1),]\n"
 	exp += "l:-[0(1),1(1),2(1),]\n"
 	exp += "r:-[6(1),7(1),8(1),]\n"
@@ -755,11 +757,46 @@ func TestTreeDelete(t *testing.T) {
 	tree.Delete(1)
 	tree.Delete(0)
 	res = tree.Show()
-	print(res)
+	//print(res)
 	exp = "[6(1),7(1),8(1),]\n"
 	exp += "l:-[3(1),4(1),5(1),]\n"
 	exp += "r:-[9(1),]\n"
 	if res != exp {
 		t.Error("illegal delete")
 	}
+}
+func TestTreeDeleteLRLotation(t *testing.T) {
+	tree := CreateTtree(3)
+	tree.Insert(9)
+	tree.Insert(10)
+	tree.Insert(11)
+	tree.Insert(12)
+	tree.Insert(3)
+	tree.Insert(4)
+	tree.Insert(5)
+	tree.Insert(6)
+	tree.Insert(7)
+	tree.Insert(8)
+	
+	res := tree.Show()
+	//print(res)
+	exp := "[9(1),10(1),11(1),]\n"
+	exp += "l:-[3(1),4(1),5(1),]\n"
+	exp += "r:--[6(1),7(1),8(1),]\n"
+	exp += "r:-[12(1),]\n"
+	if res != exp {
+		t.Error("illegal insert")
+	}
+	
+	tree.Delete(12)
+	
+	res = tree.Show()
+	//print(res)
+	exp = "[6(1),7(1),8(1),]\n"
+	exp += "l:-[3(1),4(1),5(1),]\n"
+	exp += "r:-[9(1),10(1),11(1),]\n"
+	if res != exp {
+		t.Error("illegal insert")
+	}
+
 }

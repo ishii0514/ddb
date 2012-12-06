@@ -65,7 +65,8 @@ var tests =[]testing.InternalTest{
     {"db.TestShowT",db.TestShowT},
     {"db.TestDepth",db.TestDepth},
     {"db.TestTreeInsert",db.TestTreeInsert},
-    {"db.TestTreeDelete",db.TestTreeDelete},
+    {"db.TestTreeDeleteRRLotation",db.TestTreeDeleteRRLotation},
+    {"db.TestTreeDeleteLRLotation",db.TestTreeDeleteLRLotation},
 }
 
 var benchmarks =[]testing.InternalBenchmark{
