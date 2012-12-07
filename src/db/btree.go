@@ -118,6 +118,26 @@ type nodeValue struct{
 
 //探索
 func(p *node) Search(searchValue Integer) []ROWNUM{
+	//再帰なし版
+	node := p
+	for ;; {
+	    isMatch,searchPos := node.getPosition(searchValue)
+	    //一致
+    	if isMatch {
+    		return node.values[searchPos].rows
+    	}
+    	
+    	//子ノード
+    	if  node.nodes[searchPos] == nil {
+	    	break
+    	}
+    	node = node.nodes[searchPos]
+    }
+    //不一致
+    return []ROWNUM{}
+}
+//探索
+func(p *node) Search_re(searchValue Integer) []ROWNUM{
     isMatch,searchPos := p.getPosition(searchValue)
 
     //一致

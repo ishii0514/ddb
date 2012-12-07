@@ -77,6 +77,26 @@ func createTnode(t int) *tnode{
 //探索
 //TODO test
 func(p *tnode) Search(searchValue Integer) []ROWNUM{
+	//再帰なし版
+	node := p
+	for ; ; {
+		if node.leftNode != nil && searchValue < node.minValue()  {
+			node = node.leftNode
+			continue
+		}
+		if node.rightNode != nil && searchValue > node.maxValue() {
+			node = node.rightNode
+			continue
+		}
+		break
+	}
+	isMatch,pos := node.getPosition(searchValue)
+	if isMatch == true {
+		return node.values[pos].rows
+	}
+	return []ROWNUM{}
+}
+func(p *tnode) Search_(searchValue Integer) []ROWNUM{
     if p.leftNode != nil && searchValue < p.minValue()  {
 		return p.leftNode.Search(searchValue)
 	}

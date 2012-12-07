@@ -11,7 +11,7 @@ import (
 //BTreeノード数
 var BNODE_CNT int = 128
 //Treeノード数
-var TNODE_CNT int = 64
+var TNODE_CNT int = 128
 //データ件数
 var DATA_CNT int = 1000000
 
