@@ -2,3 +2,5 @@
 .project
 bin/
 pkg/
+
+.DS_Store
