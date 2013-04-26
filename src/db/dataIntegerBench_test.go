@@ -9,9 +9,9 @@ import (
 //go test -bench=".*"
 
 //BTreeノード数
-var BNODE_CNT int = 128
+var BNODE_CNT int = 256
 //Treeノード数
-var TNODE_CNT int = 128
+var TNODE_CNT int = 256
 //データ件数
 var DATA_CNT int = 1000000
 

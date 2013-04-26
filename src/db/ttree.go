@@ -21,44 +21,16 @@ const (
 
 )
 
-func binarySearchT(values []nodeValue,searchValue Type,head int,tail int) (bool,int){
-    if head > tail {
-        return false,head
-    }
-    pivot := (head+tail)/2
-
-    if values[pivot].key == searchValue {
-        return true,pivot
-    } else if values[pivot].key.comp(searchValue)>0 {
-        return binarySearchT(values,searchValue,head,pivot-1)
-    }
-    return binarySearchT(values,searchValue,pivot+1,tail)
-}
-
-func binarySearchInteger(values []nodeValue,searchValue Integer,head int,tail int) (bool,int){
-    if head > tail {
-        return false,head
-    }
-    pivot := (head+tail)/2
-
-    if values[pivot].key == searchValue {
-        return true,pivot
-    } else if values[pivot].key.(Integer) > searchValue {
-        return binarySearchInteger(values,searchValue,head,pivot-1)
-    }
-    return binarySearchInteger(values,searchValue,pivot+1,tail)
-}
-
-//再帰なし
-func binarySearchNorec(values []nodeValue,searchValue Integer,head int,tail int) (bool,int){
+func binarySearch(values []nodeValue,searchValue Type,head int,tail int) (bool,int){
+    //再帰なし
     for ;; {
       if head > tail {
         return false,head
       }
       pivot := (head+tail)/2
-      if values[pivot].key == searchValue {
+      if values[pivot].key.comp(searchValue) == 0 {
         return true,pivot
-      } else if values[pivot].key.(Integer) > searchValue{
+      } else if values[pivot].key.comp(searchValue) > 0 {
         tail = pivot-1
       } else {
          head = pivot+1
@@ -374,10 +346,7 @@ func(p *tnode) deleteValue(deletePos int) ROWNUM {
 }
 //ノード内の操作対象箇所を検索する
 func(p *tnode) getPosition(searchValue Type) (bool,int) {
-    //return binarySearchT(p.values,searchValue,0,p.dataCount-1)
-    //return binarySearchInteger(p.values,searchValue.(Integer),0,p.dataCount-1)
-    return binarySearchNorec(p.values,searchValue.(Integer),0,p.dataCount-1)
-
+    return binarySearch(p.values,searchValue,0,p.dataCount-1)
 }
 //左ノードを作る
 func(p *tnode) createLeftNode(){

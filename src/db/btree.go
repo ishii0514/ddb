@@ -96,7 +96,7 @@ func createNode(t int) *node{
 }
 
 
-func binarySearch(values []nodeValueInteger,searchValue Integer,head int,tail int) (bool,int){
+func binarySearchInteger(values []nodeValueInteger,searchValue Integer,head int,tail int) (bool,int){
     //再帰なし
     for ;; {
       if head > tail {
@@ -370,7 +370,7 @@ func(p *node) linearSearch(searchValue Integer) (bool,int){
 }
 //ノード内の操作対象箇所を二分検索する
 func(p *node) binarySearch(searchValue Integer,head int,tail int) (bool,int){
-  return binarySearch(p.values,searchValue,head,tail)
+  return binarySearchInteger(p.values,searchValue,head,tail)
 }
 
 //ノード内に値を挿入する

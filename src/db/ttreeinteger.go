@@ -312,7 +312,7 @@ func(p *tnodeInteger) deleteValue(deletePos int) ROWNUM {
 }
 //ノード内の操作対象箇所を検索する
 func(p *tnodeInteger) getPosition(searchValue Integer) (bool,int) {
-    return binarySearch(p.values,searchValue,0,p.dataCount-1)
+    return binarySearchInteger(p.values,searchValue,0,p.dataCount-1)
 }
 //左ノードを作る
 func(p *tnodeInteger) createLeftNode(){
