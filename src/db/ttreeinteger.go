@@ -51,10 +51,10 @@ type tnodeInteger struct{
     //ノードサイズ
     t int
     //データ数
-    dataCount int    
+    dataCount int
     //値
     values []nodeValueInteger
-    
+
     //parentノード
     parentNode  *tnodeInteger
     //leftノード
@@ -132,7 +132,7 @@ func(p *tnodeInteger) Insert(insertNodeValue nodeValueInteger) (bool,*tnodeInteg
 		p.values[pos].rows = append(p.values[pos].rows,insertNodeValue.rows...)
 		return false,p
 	}
-	
+
 	//新規データ
 	if p.IsOverFlow() == false {
 		//オーバーフローなし
@@ -236,17 +236,17 @@ func (p *tnodeInteger) doAfterChildDelete(child ChildType,del bool) (bool,*tnode
 	if child == LEFT {
 		if p.leftNode.dataCount == 0 {
 			p.leftNode = nil
-			delflg = true	
+			delflg = true
 		}
 	} else if child == RIGHT {
 		if p.rightNode.dataCount == 0 {
 			p.rightNode = nil
-			delflg = true	
+			delflg = true
 		}
 	}
 	//リバランス
 	if delflg {
-		_,newRoot = rebalanceInteger(p)		
+		_,newRoot = rebalanceInteger(p)
 	}
 	return delflg,newRoot
 }
@@ -306,7 +306,7 @@ func(p *tnodeInteger) deleteValue(deletePos int) ROWNUM {
         p.values[i] = p.values[i+1]
     }
     //初期化
-    p.values[p.dataCount-1] = nodeValueInteger{}   
+    p.values[p.dataCount-1] = nodeValueInteger{}
     p.dataCount -= 1
     return ROWNUM(rows)
 }
@@ -328,15 +328,15 @@ func(p *tnodeInteger) createRightNode(){
 //左子ノードからマージ
 func (p *tnodeInteger) mergeFromLeftNode(){
 	p.mergeHead(p.leftNode,0)
-	p.rightNode = p.leftNode.rightNode	
+	p.rightNode = p.leftNode.rightNode
 	p.leftNode = p.leftNode.leftNode
-	
+
 }
 //右子ノードからマージ
 func (p *tnodeInteger) mergeFromRightNode(){
 	p.mergeTail(p.rightNode,0)
 	p.leftNode = p.rightNode.leftNode
-	p.rightNode = p.rightNode.rightNode	
+	p.rightNode = p.rightNode.rightNode
 }
 //対象ノードを後ろ側にマージする
 //srcNodeのstart番目以降をマージ
@@ -346,7 +346,7 @@ func (p *tnodeInteger) mergeTail(srcNode *tnodeInteger,start int){
 		p.values[cnt+i-start] = srcNode.values[i]
 	}
 	p.dataCount = p.dataCount + srcNode.dataCount - start
-	
+
 	srcNode.clear(start)
 }
 //対象ノードを前側にマージする
@@ -360,7 +360,7 @@ func (p *tnodeInteger) mergeHead(srcNode *tnodeInteger,start int){
 		p.values[i-start] = srcNode.values[i]
 	}
 	p.dataCount = p.dataCount + srcNode.dataCount - start
-	
+
 	srcNode.clear(start)
 }
 //start番目以降をクリアする
@@ -375,36 +375,36 @@ func (p *tnodeInteger) clear(start int){
 func rotationLLInteger(root *tnodeInteger) *tnodeInteger{
 	//新たにrootになる
 	newRoot := root.leftNode
-	
+
 	//左子を付け替え
 	root.leftNode = newRoot.rightNode
 	if root.leftNode != nil {
 		root.leftNode.parentNode = root
 	}
-	
+
 	//親を付け替え
 	newRoot.parentNode = root.parentNode
 	root.parentNode = newRoot
 	newRoot.rightNode = root
-	
+
 	return newRoot
 }
 //RRローテーション
 func rotationRRInteger(root *tnodeInteger) *tnodeInteger{
 	//新たにrootになる
 	newRoot := root.rightNode
-	
+
 	//右子を付け替え
 	root.rightNode = newRoot.leftNode
 	if root.rightNode != nil {
 		root.rightNode.parentNode = root
 	}
-	
+
 	//親を付け替え
 	newRoot.parentNode = root.parentNode
 	root.parentNode = newRoot
 	newRoot.leftNode = root
-	
+
 	return newRoot
 }
 //LRローテーション
@@ -413,33 +413,33 @@ func rotationLRInteger(root *tnodeInteger) *tnodeInteger{
 	newRoot := root.leftNode.rightNode
 	//新たなleftNode
 	newLeft := root.leftNode
-	
+
 	//leftNode(B)の付け替え
 	newLeft.rightNode = newRoot.leftNode
 	if newRoot.leftNode != nil {
 		newRoot.leftNode.parentNode = newLeft
 	}
-	
+
 	//rootNode(A)の付け替え
 	root.leftNode = newRoot.rightNode
 	if newRoot.rightNode != nil {
 		newRoot.rightNode.parentNode = root
 	}
-	
+
 	//newRoot(C)の付け替え
 	newRoot.parentNode = root.parentNode
-	
+
 	newRoot.leftNode = newLeft
 	newLeft.parentNode = newRoot
-	
+
 	newRoot.rightNode = root
 	root.parentNode = newRoot
-	
+
 	//special lotation
 	if newRoot.dataCount == 1 {
 		newRoot.mergeHead(newLeft,1)
 	}
-	
+
 	return newRoot
 }
 //RLローテーション
@@ -448,7 +448,7 @@ func rotationRLInteger(root *tnodeInteger) *tnodeInteger{
 	newRoot := root.rightNode.leftNode
 	//新たなrightNode
 	newRight := root.rightNode
-	
+
 	//rightNode(B)の付け替え
 	newRight.leftNode = newRoot.rightNode
 	if newRoot.rightNode != nil {
@@ -461,18 +461,18 @@ func rotationRLInteger(root *tnodeInteger) *tnodeInteger{
 	}
 	//newRoot(C)の付け替え
 	newRoot.parentNode = root.parentNode
-	
+
 	newRoot.rightNode = newRight
 	newRight.parentNode = newRoot
-	
+
 	newRoot.leftNode = root
 	root.parentNode = newRoot
-	
+
 	//special lotation
 	if newRoot.dataCount == 1 {
 		newRoot.mergeTail(newRight,1)
 	}
-	
+
 	return newRoot
 }
 
@@ -487,7 +487,7 @@ func rebalanceInteger(root *tnodeInteger) (bool,*tnodeInteger){
 	}
 	//親ノード退避
 	parent := root.parentNode
-	
+
 	if def > 0 {
 		//左が深い
 		if root.leftNode.leftDepth() >= root.leftNode.rightDepth() {
@@ -507,7 +507,7 @@ func rebalanceInteger(root *tnodeInteger) (bool,*tnodeInteger){
 			newRoot = rotationRLInteger(root)
 		}
 	}
-	
+
 	//親ノードのポインタ付け替え
 	if parent != nil {
 		if parent.leftNode == root {
@@ -548,7 +548,7 @@ func(p *tnodeInteger) Show() string {
 func(p *tnodeInteger) showPadding(pad int) string {
     res := ""
     padding := strings.Repeat("-", pad)
-    
+
     res += padding + "["
     for i:= 0;i < p.dataCount;i++ {
         res += strconv.Itoa(int(p.values[i].key)) + "("
@@ -561,6 +561,6 @@ func(p *tnodeInteger) showPadding(pad int) string {
     }
     if p.rightNode !=nil {
     	res += "r:" + p.rightNode.showPadding(pad+1)
-    } 
+    }
     return res
 }

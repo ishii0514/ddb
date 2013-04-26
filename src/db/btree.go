@@ -72,7 +72,7 @@ func createNewRoot(newNodeValue nodeValueInteger,rootNode *node,newChildNode *no
 //Bツリーのノード
 type node struct{
     //データ数
-    dataCount int    
+    dataCount int
     //値
     values []nodeValueInteger
     //子ノード
@@ -95,21 +95,24 @@ func createNode(t int) *node{
     return newNode
 }
 
-//ノード内の操作対象箇所を二分検索する
-func binarySearch(values []nodeValueInteger,searchValue Integer,head int,tail int) (bool,int){
-    if head > tail {
-        return false,head
-    }
-    pivot := (head+tail)/2
-    
-    if values[pivot].key == searchValue {
-        return true,pivot
-    } else if values[pivot].key > searchValue {
-        return binarySearch(values,searchValue,head,pivot-1)
-    }
-    return binarySearch(values,searchValue,pivot+1,tail)
-}
 
+func binarySearch(values []nodeValueInteger,searchValue Integer,head int,tail int) (bool,int){
+    //再帰なし
+    for ;; {
+      if head > tail {
+        return false,head
+      }
+      pivot := (head+tail)/2
+      if values[pivot].key == searchValue {
+        return true,pivot
+      } else if values[pivot].key > searchValue{
+        tail = pivot-1
+      } else {
+         head = pivot+1
+      }
+    }
+    return false,head
+}
 
 
 //探索
@@ -122,7 +125,7 @@ func(p *node) Search(searchValue Integer) []ROWNUM{
     	if isMatch {
     		return node.values[searchPos].rows
     	}
-    	
+
     	//子ノード
     	if  node.nodes[searchPos] == nil {
 	    	break
@@ -158,7 +161,7 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValueInteger,*node){
         p.values[insertPos].rows = append(p.values[insertPos].rows,row)
     	return nodeValueInteger{},nil
     }
-    
+
     var newNodeValue = nodeValueInteger{key : insertValue,rows : []ROWNUM{row}}
     var newChildNode *node =nil
     //子ノード
@@ -169,7 +172,7 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValueInteger,*node){
             return nodeValueInteger{},nil
         }
     }
-   
+
     //新規データの挿入
     p.insertValue(insertPos,newNodeValue,newChildNode)
     if p.dataCount > p.t*2-1 {
@@ -185,7 +188,7 @@ func(p *node) Insert(insertValue Integer,row ROWNUM) (nodeValueInteger,*node){
 func(p *node) Delete(deleteValue Integer) ROWNUM{
 
     isMatch,deletePos := p.getPosition(deleteValue)
-    
+
     //一致
     if isMatch {
         //葉の場合
@@ -216,11 +219,11 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             //再帰的に右子から削除
             //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
             p.nodes[deletePos].Delete(deleteValue)
-            
+
         }
         return ROWNUM(rows)
     }
-    
+
     //不一致
     if  p.nodes[deletePos] == nil {
         //葉
@@ -235,7 +238,7 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             p.nodes[deletePos].addTail(
                 p.values[deletePos],
                 p.nodes[deletePos+1].nodes[0])
-                    
+
             //現ノードに右兄弟から値を代入
             p.values[deletePos] = p.nodes[deletePos+1].values[0]
             //右兄弟から値を削除
@@ -264,12 +267,12 @@ func(p *node) Delete(deleteValue Integer) ROWNUM{
             //値（と左子）を削除
             //根ノードの時、valuesが無くなりnodes[0]だけ残る場合がある。
             p.deleteValue(deletePos-1)
-            
+
             //削除した分ずれる
             deletePos = deletePos-1
         }
     }
-    //再帰的に削除            
+    //再帰的に削除
     return p.nodes[deletePos].Delete(deleteValue)
 }
 
@@ -287,7 +290,7 @@ func mergeNodes(leftNode *node,med nodeValueInteger,rightNode *node) *node{
     mergeNode.values[mergeNode.dataCount] = med
     mergeNode.nodes[mergeNode.dataCount] = leftNode.nodes[leftNode.dataCount]
     mergeNode.dataCount +=1
-    
+
     //右ノード代入
     j := mergeNode.dataCount
     for i:= 0;i<rightNode.dataCount;i++ {
@@ -305,13 +308,13 @@ func mergeNodes(leftNode *node,med nodeValueInteger,rightNode *node) *node{
 func(p *node) devideNode(devidePosition int) (nodeValueInteger,*node){
     //新規ノードの生成
     newNode := createNewNode(p,devidePosition)
-   
-    //親ノードに返す値        
-    returnNodeValue := p.values[devidePosition] 
-    
+
+    //親ノードに返す値
+    returnNodeValue := p.values[devidePosition]
+
     //元ノードの初期化
     p.clear(devidePosition)
-   
+
     return returnNodeValue,newNode
 
 }
@@ -320,7 +323,7 @@ func(p *node) devideNode(devidePosition int) (nodeValueInteger,*node){
  * 指定ポジション以降を初期化
  */
 func(p *node) clear(devidePosition int) {
-    for i:= devidePosition ; i<p.dataCount;i= i+1{            
+    for i:= devidePosition ; i<p.dataCount;i= i+1{
         //初期化
         p.values[i] = nodeValueInteger{0,nil}
         p.nodes[i+1] = nil
@@ -342,7 +345,7 @@ func createNewNode(srcNode *node,devidePosition int) *node {
         newNode.values[j] = srcNode.values[i]
         newNode.nodes[j+1] = srcNode.nodes[i+1]
         newNode.dataCount +=1
-    }    
+    }
     return newNode
 }
 
@@ -367,14 +370,14 @@ func(p *node) linearSearch(searchValue Integer) (bool,int){
 }
 //ノード内の操作対象箇所を二分検索する
 func(p *node) binarySearch(searchValue Integer,head int,tail int) (bool,int){
-	return binarySearch(p.values,searchValue,head,tail)
+  return binarySearch(p.values,searchValue,head,tail)
 }
 
 //ノード内に値を挿入する
 func(p *node) insertValue(insertPos int,insertNodeValue nodeValueInteger,newNode *node) {
     for i:= p.dataCount;i > insertPos;i-- {
         p.values[i] = p.values[i-1]
-        p.nodes[i+1] = p.nodes[i]   
+        p.nodes[i+1] = p.nodes[i]
     }
     p.values[insertPos] = insertNodeValue
     p.nodes[insertPos+1] = newNode
@@ -392,7 +395,7 @@ func(p *node) addHead(insertNodeValue nodeValueInteger,newNode *node) {
     p.nodes[p.dataCount+1] = p.nodes[p.dataCount]
     for i:= p.dataCount;i > 0;i-- {
         p.values[i] = p.values[i-1]
-        p.nodes[i] = p.nodes[i-1]   
+        p.nodes[i] = p.nodes[i-1]
     }
     p.values[0] = insertNodeValue
     p.nodes[0] = newNode
@@ -404,14 +407,14 @@ func(p *node) deleteValue(deletePos int) ROWNUM {
     rows := len(p.values[deletePos].rows)
     for i:= deletePos ; i < p.dataCount-1;i++ {
         p.values[i] = p.values[i+1]
-        p.nodes[i] = p.nodes[i+1]   
+        p.nodes[i] = p.nodes[i+1]
     }
     p.nodes[p.dataCount-1] = p.nodes[p.dataCount]
-    
+
     //初期化
     p.values[p.dataCount-1] = nodeValueInteger{}
     p.nodes[p.dataCount] = nil
-    
+
     p.dataCount -= 1
     return ROWNUM(rows)
 }
@@ -450,7 +453,7 @@ func(p *node) Show() string {
 func(p *node) showPadding(pad int) string {
     res := ""
     padding := strings.Repeat("-", pad)
-    
+
     res += padding + "["
     for i:= 0;i < p.dataCount;i++ {
         res += strconv.Itoa(int(p.values[i].key)) + "("
@@ -458,7 +461,7 @@ func(p *node) showPadding(pad int) string {
         res += "),"
     }
     res += "]\n"
-    
+
     //子ノード
     for i:= 0;i < p.dataCount+1;i++ {
         if p.nodes[i] != nil {
