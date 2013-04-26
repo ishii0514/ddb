@@ -635,7 +635,7 @@ func TestGetPositionT(t *testing.T) {
   root.Insert(nodeValue{Integer(7),[]ROWNUM{1}})
   root.Insert(nodeValue{Integer(6),[]ROWNUM{1}})
 
-  match,pos := root.getPosition(Integer(5))
+  match,pos := binarySearch(root.values,Integer(5),0,root.dataCount-1)
   if match != false {
     t.Error("illegal match")
   }

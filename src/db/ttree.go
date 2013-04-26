@@ -124,7 +124,6 @@ func(p *tnode) Search(searchValue Type) []ROWNUM{
     }
     break
   }
-  //isMatch,pos := node.getPosition(searchValue)
   isMatch,pos := binarySearch(node.values,searchValue,0,node.dataCount-1)
   if isMatch {
     return node.values[pos].rows
@@ -149,7 +148,7 @@ func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
     }
     return false,p
   }
-  isMatch,pos := p.getPosition(insertNodeValue.key)
+  isMatch,pos := binarySearch(p.values,insertNodeValue.key,0,p.dataCount-1)
   if isMatch == true {
     p.values[pos].rows = append(p.values[pos].rows,insertNodeValue.rows...)
     return false,p
@@ -203,7 +202,7 @@ func(p *tnode) Delete(deleteValue Type) (ROWNUM,bool,*tnode) {
     delflg,newRoot := p.doAfterChildDelete(RIGHT,del)
     return deleteNum,delflg,newRoot
   }
-  isMatch,pos := p.getPosition(deleteValue)
+  isMatch,pos := binarySearch(p.values,deleteValue,0,p.dataCount-1)
   if isMatch == false {
     //該当データなし
     return 0,false,p
@@ -332,10 +331,7 @@ func(p *tnode) deleteValue(deletePos int) ROWNUM {
     p.dataCount -= 1
     return ROWNUM(rows)
 }
-//ノード内の操作対象箇所を検索する
-func(p *tnode) getPosition(searchValue Type) (bool,int) {
-    return binarySearch(p.values,searchValue,0,p.dataCount-1)
-}
+
 //左ノードを作る
 func(p *tnode) createLeftNode(){
     p.leftNode = createTnode(p.t)
