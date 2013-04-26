@@ -124,22 +124,10 @@ func(p *tnode) Search(searchValue Type) []ROWNUM{
     }
     break
   }
-  isMatch,pos := node.getPosition(searchValue)
-  if isMatch == true {
+  //isMatch,pos := node.getPosition(searchValue)
+  isMatch,pos := binarySearch(node.values,searchValue,0,node.dataCount-1)
+  if isMatch {
     return node.values[pos].rows
-  }
-  return []ROWNUM{}
-}
-func(p *tnode) Search_(searchValue Type) []ROWNUM{
-    if p.leftNode != nil && searchValue.comp(p.minValue())<0  {
-    return p.leftNode.Search(searchValue)
-  }
-  if p.rightNode != nil && searchValue.comp(p.maxValue())>0 {
-    return p.rightNode.Search(searchValue)
-  }
-  isMatch,pos := p.getPosition(searchValue)
-  if isMatch == true {
-    return p.values[pos].rows
   }
   return []ROWNUM{}
 }
