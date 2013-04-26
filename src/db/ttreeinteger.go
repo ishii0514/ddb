@@ -4,99 +4,69 @@ import (
     "strings"
     "strconv"
 )
-//ttreeのMergeを表す定数
-type MergeType int
-const (
-	MERGE_TYPE_NONE MergeType = iota	//0
-	MERGE_TYPE_LEFT MergeType = iota	//1
-	MERGE_TYPE_RIGHT  MergeType = iota	//2
-	MERGE_TYPE_BOTH  MergeType = iota	//3
-)
-//ttreeのMergeを表す定数
-type ChildType int
-const (
-	NONE ChildType = iota	//0
-	LEFT ChildType = iota	//1
-	RIGHT ChildType = iota	//2
-	
-)
-
-func binarySearchT(values []nodeValue,searchValue Type,head int,tail int) (bool,int){
-    if head > tail {
-        return false,head
-    }
-    pivot := (head+tail)/2
-    
-    if values[pivot].key == searchValue {
-        return true,pivot
-    } else if values[pivot].key.comp(searchValue)>0 {
-        return binarySearchT(values,searchValue,head,pivot-1)
-    }
-    return binarySearchT(values,searchValue,pivot+1,tail)
-}
 
 //Tteeデータ構造
-type Ttree struct{
-    rootNode *tnode
+type TtreeInteger struct{
+    rootNode *tnodeInteger
     dataCount ROWNUM
     rowid ROWNUM
 }
-//Ttreeコンストラクタ
-func CreateTtree(t int) Ttree {
-    return Ttree{rootNode:createTnode(t),dataCount:0,rowid:0}
+//TtreeIntegerコンストラクタ
+func CreateTtreeInteger(t int) TtreeInteger {
+    return TtreeInteger{rootNode:createTnodeInteger(t),dataCount:0,rowid:0}
 }
 
 //データ数
-func(p *Ttree) DataCount() ROWNUM{
+func(p *TtreeInteger) DataCount() ROWNUM{
     return p.dataCount
 }
 
 //行指定（ダミー）
-func(p *Ttree) Get(row ROWNUM) (Type,error){
-    return nil,nil
+func(p *TtreeInteger) Get(row ROWNUM) (Integer,error){
+    return 0,nil
 }
 //探索
-func(p *Ttree) Search(searchValue Type) []ROWNUM{
+func(p *TtreeInteger) Search(searchValue Integer) []ROWNUM{
     return p.rootNode.Search(searchValue)
 }
 //挿入
-func(p *Ttree) Insert(insertValue Type) ROWNUM{
-	_,p.rootNode = p.rootNode.Insert(nodeValue{insertValue,[]ROWNUM{p.rowid}})
+func(p *TtreeInteger) Insert(insertValue Integer) ROWNUM{
+	_,p.rootNode = p.rootNode.Insert(nodeValueInteger{insertValue,[]ROWNUM{p.rowid}})
     p.dataCount += 1
     p.rowid += 1
     return ROWNUM(1)
 }
-func(p *Ttree) Delete(deleteValue Type) ROWNUM{
+func(p *TtreeInteger) Delete(deleteValue Integer) ROWNUM{
 	var deleteRows ROWNUM = 0
     deleteRows,_,p.rootNode = p.rootNode.Delete(deleteValue)
     p.dataCount = p.dataCount - deleteRows
     return deleteRows
 }
 //探索
-func(p *Ttree) Show() string{
+func(p *TtreeInteger) Show() string{
     return p.rootNode.Show()
 }
 //Tツリーのノード
-type tnode struct{
+type tnodeInteger struct{
     //ノードサイズ
     t int
     //データ数
     dataCount int    
     //値
-    values []nodeValue
+    values []nodeValueInteger
     
     //parentノード
-    parentNode  *tnode
+    parentNode  *tnodeInteger
     //leftノード
-    leftNode  *tnode
+    leftNode  *tnodeInteger
     //rightノード
-    rightNode  *tnode
+    rightNode  *tnodeInteger
 }
 
 //Tノードコンストラクタ
-func createTnode(t int) *tnode{
-    newNode := new(tnode)
-    newNode.values = make([]nodeValue,t)
+func createTnodeInteger(t int) *tnodeInteger{
+    newNode := new(tnodeInteger)
+    newNode.values = make([]nodeValueInteger,t)
     newNode.t = t
     newNode.dataCount = 0
     newNode.parentNode = nil
@@ -106,15 +76,15 @@ func createTnode(t int) *tnode{
 }
 //探索
 //TODO test
-func(p *tnode) Search(searchValue Type) []ROWNUM{
+func(p *tnodeInteger) Search(searchValue Integer) []ROWNUM{
 	//再帰なし版
 	node := p
 	for ; ; {
-		if node.leftNode != nil && searchValue.comp(node.minValue()) < 0  {
+		if node.leftNode != nil && searchValue < node.minValue()  {
 			node = node.leftNode
 			continue
 		}
-		if node.rightNode != nil && searchValue.comp(node.maxValue()) >0 {
+		if node.rightNode != nil && searchValue > node.maxValue() {
 			node = node.rightNode
 			continue
 		}
@@ -126,11 +96,11 @@ func(p *tnode) Search(searchValue Type) []ROWNUM{
 	}
 	return []ROWNUM{}
 }
-func(p *tnode) Search_(searchValue Type) []ROWNUM{
-    if p.leftNode != nil && searchValue.comp(p.minValue())<0  {
+func(p *tnodeInteger) Search_(searchValue Integer) []ROWNUM{
+    if p.leftNode != nil && searchValue < p.minValue()  {
 		return p.leftNode.Search(searchValue)
 	}
-	if p.rightNode != nil && searchValue.comp(p.maxValue())>0 {
+	if p.rightNode != nil && searchValue > p.maxValue() {
 		return p.rightNode.Search(searchValue)
 	}
 	isMatch,pos := p.getPosition(searchValue)
@@ -142,18 +112,18 @@ func(p *tnode) Search_(searchValue Type) []ROWNUM{
 //Tnodeインサート
 //戻り値　ノード追加発生,新たなルートノード
 //TODO リファクタ
-func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
-	if p.leftNode != nil && insertNodeValue.key.comp(p.minValue())<0  {
+func(p *tnodeInteger) Insert(insertNodeValue nodeValueInteger) (bool,*tnodeInteger) {
+	if p.leftNode != nil && insertNodeValue.key < p.minValue()  {
 		add,_ := p.leftNode.Insert(insertNodeValue)
 		if add {
-			return rebalance(p)
+			return rebalanceInteger(p)
 		}
 		return false,p
 	}
-	if p.rightNode != nil && insertNodeValue.key.comp(p.maxValue())>0 {
+	if p.rightNode != nil && insertNodeValue.key > p.maxValue() {
 		add,_ := p.rightNode.Insert(insertNodeValue)
 		if add {
-			return rebalance(p)
+			return rebalanceInteger(p)
 		}
 		return false,p
 	}
@@ -190,7 +160,7 @@ func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
 		}
 		add,_ := p.leftNode.Insert(minNode)
 		if add {
-			return rebalance(p)
+			return rebalanceInteger(p)
 		}
 		return false,p
 	}
@@ -200,13 +170,13 @@ func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
 
 //Tnode削除
 //TODO test
-func(p *tnode) Delete(deleteValue Type) (ROWNUM,bool,*tnode) {
-	if p.leftNode != nil && deleteValue.comp(p.minValue())<0  {
+func(p *tnodeInteger) Delete(deleteValue Integer) (ROWNUM,bool,*tnodeInteger) {
+	if p.leftNode != nil && deleteValue < p.minValue()  {
 		deleteNum,del,_ := p.leftNode.Delete(deleteValue)
 		delflg,newRoot := p.doAfterChildDelete(LEFT,del)
 		return deleteNum,delflg,newRoot
 	}
-	if p.rightNode != nil && deleteValue.comp(p.maxValue())>0 {
+	if p.rightNode != nil && deleteValue > p.maxValue() {
 		deleteNum,del,_ := p.rightNode.Delete(deleteValue)
 		delflg,newRoot := p.doAfterChildDelete(RIGHT,del)
 		return deleteNum,delflg,newRoot
@@ -230,7 +200,7 @@ func(p *tnode) Delete(deleteValue Type) (ROWNUM,bool,*tnode) {
 }
 //最大値をpop
 //TODO test
-func(p *tnode) popMaxNode() (nodeValue,bool,*tnode){
+func(p *tnodeInteger) popMaxNode() (nodeValueInteger,bool,*tnodeInteger){
 	if p.rightNode != nil {
 		retNode,del,_ := p.rightNode.popMaxNode()
 		delflg,newRoot := p.doAfterChildDelete(RIGHT,del)
@@ -243,7 +213,7 @@ func(p *tnode) popMaxNode() (nodeValue,bool,*tnode){
 
 //harfnodeのマージ
 //戻り値　ノードの削除発生
-func(p *tnode) halfLeafMerge() bool{
+func(p *tnodeInteger) halfLeafMerge() bool{
 	isDel := false
 	if p.IsHalfLeaf() {
 		//half-leaf
@@ -260,7 +230,7 @@ func(p *tnode) halfLeafMerge() bool{
 }
 //子ノードのDelete実行後処理
 //空になったリーフの削除、リバランス
-func (p *tnode) doAfterChildDelete(child ChildType,del bool) (bool,*tnode){
+func (p *tnodeInteger) doAfterChildDelete(child ChildType,del bool) (bool,*tnodeInteger){
 	newRoot := p
 	delflg := del
 	if child == LEFT {
@@ -276,30 +246,30 @@ func (p *tnode) doAfterChildDelete(child ChildType,del bool) (bool,*tnode){
 	}
 	//リバランス
 	if delflg {
-		_,newRoot = rebalance(p)		
+		_,newRoot = rebalanceInteger(p)		
 	}
 	return delflg,newRoot
 }
 //次に挿入したらOverFlowするか
-func(p *tnode) IsOverFlow() bool{
+func(p *tnodeInteger) IsOverFlow() bool{
 	return p.dataCount  == p.t
 }
 //under flowしているか
-func(p *tnode) IsUnderFlow() bool{
+func(p *tnodeInteger) IsUnderFlow() bool{
 	return p.dataCount  <= p.t-3
 }
-func(p *tnode) IsInternalNode() bool{
+func(p *tnodeInteger) IsInternalNode() bool{
 	return p.leftNode != nil && p.rightNode != nil
 }
-func(p *tnode) IsLeafNode() bool{
+func(p *tnodeInteger) IsLeafNode() bool{
 	return p.leftNode == nil && p.rightNode == nil
 }
-func(p *tnode) IsHalfLeaf() bool{
+func(p *tnodeInteger) IsHalfLeaf() bool{
 	return p.IsInternalNode() == false && p.IsLeafNode() == false
 }
 //マージできる子ノードの有無
 //0なし 1左　2右　3両方
-func(p *tnode) canMergeChildNode() MergeType{
+func(p *tnodeInteger) canMergeChildNode() MergeType{
 	canMerge := MERGE_TYPE_NONE
 	if p.leftNode != nil && p.dataCount + p.leftNode.dataCount  <= p.t {
 		canMerge += MERGE_TYPE_LEFT
@@ -309,20 +279,20 @@ func(p *tnode) canMergeChildNode() MergeType{
 	}
 	return canMerge
 }
-func(p *tnode) maxValue() Type{
+func(p *tnodeInteger) maxValue() Integer{
 	return p.values[p.dataCount-1].key
 }
-func(p *tnode) minValue() Type{
+func(p *tnodeInteger) minValue() Integer{
 	return p.values[0].key
 }
 //指定ポジションをpop
-func(p *tnode) popNodeValue(pos int) nodeValue{
+func(p *tnodeInteger) popNodeValue(pos int) nodeValueInteger{
 	minNodeValue := p.values[pos]
 	p.deleteValue(pos)
 	return minNodeValue
 }
 //ノード内に値を挿入する
-func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {
+func(p *tnodeInteger) insertValue(insertPos int,insertNodeValue nodeValueInteger) {
     for i:= p.dataCount;i > insertPos;i-- {
         p.values[i] = p.values[i-1]
     }
@@ -330,47 +300,47 @@ func(p *tnode) insertValue(insertPos int,insertNodeValue nodeValue) {
     p.dataCount += 1
 }
 //ノード内の値を削除する
-func(p *tnode) deleteValue(deletePos int) ROWNUM {
+func(p *tnodeInteger) deleteValue(deletePos int) ROWNUM {
     rows := len(p.values[deletePos].rows)
     for i:= deletePos ; i < p.dataCount-1;i++ {
         p.values[i] = p.values[i+1]
     }
     //初期化
-    p.values[p.dataCount-1] = nodeValue{}   
+    p.values[p.dataCount-1] = nodeValueInteger{}   
     p.dataCount -= 1
     return ROWNUM(rows)
 }
 //ノード内の操作対象箇所を検索する
-func(p *tnode) getPosition(searchValue Type) (bool,int) {
-    return binarySearchT(p.values,searchValue,0,p.dataCount-1)
+func(p *tnodeInteger) getPosition(searchValue Integer) (bool,int) {
+    return binarySearch(p.values,searchValue,0,p.dataCount-1)
 }
 //左ノードを作る
-func(p *tnode) createLeftNode(){
-    p.leftNode = createTnode(p.t)
+func(p *tnodeInteger) createLeftNode(){
+    p.leftNode = createTnodeInteger(p.t)
     p.leftNode.parentNode = p
 }
 //右ノードを作る
-func(p *tnode) createRightNode(){
-    p.rightNode = createTnode(p.t)
+func(p *tnodeInteger) createRightNode(){
+    p.rightNode = createTnodeInteger(p.t)
     p.rightNode.parentNode = p
 }
 
 //左子ノードからマージ
-func (p *tnode) mergeFromLeftNode(){
+func (p *tnodeInteger) mergeFromLeftNode(){
 	p.mergeHead(p.leftNode,0)
 	p.rightNode = p.leftNode.rightNode	
 	p.leftNode = p.leftNode.leftNode
 	
 }
 //右子ノードからマージ
-func (p *tnode) mergeFromRightNode(){
+func (p *tnodeInteger) mergeFromRightNode(){
 	p.mergeTail(p.rightNode,0)
 	p.leftNode = p.rightNode.leftNode
 	p.rightNode = p.rightNode.rightNode	
 }
 //対象ノードを後ろ側にマージする
 //srcNodeのstart番目以降をマージ
-func (p *tnode) mergeTail(srcNode *tnode,start int){
+func (p *tnodeInteger) mergeTail(srcNode *tnodeInteger,start int){
 	cnt := p.dataCount
 	for i:= start; i < srcNode.dataCount ; i++{
 		p.values[cnt+i-start] = srcNode.values[i]
@@ -381,7 +351,7 @@ func (p *tnode) mergeTail(srcNode *tnode,start int){
 }
 //対象ノードを前側にマージする
 //srcNodeのstart番目以降をマージ
-func (p *tnode) mergeHead(srcNode *tnode,start int){
+func (p *tnodeInteger) mergeHead(srcNode *tnodeInteger,start int){
 	cnt := srcNode.dataCount - start
 	for i:= 0; i < p.dataCount ; i++{
 		p.values[cnt+i] = p.values[i]
@@ -394,15 +364,15 @@ func (p *tnode) mergeHead(srcNode *tnode,start int){
 	srcNode.clear(start)
 }
 //start番目以降をクリアする
-func (p *tnode) clear(start int){
+func (p *tnodeInteger) clear(start int){
 	for i:= start ;i < p.dataCount;i++ {
-		p.values[i].clear()
+		p.values[i] = nodeValueInteger{0,nil}
 	}
 	p.dataCount =start
 }
 
 //LLローテーション
-func rotationLL(root *tnode) *tnode{
+func rotationLLInteger(root *tnodeInteger) *tnodeInteger{
 	//新たにrootになる
 	newRoot := root.leftNode
 	
@@ -420,7 +390,7 @@ func rotationLL(root *tnode) *tnode{
 	return newRoot
 }
 //RRローテーション
-func rotationRR(root *tnode) *tnode{
+func rotationRRInteger(root *tnodeInteger) *tnodeInteger{
 	//新たにrootになる
 	newRoot := root.rightNode
 	
@@ -438,7 +408,7 @@ func rotationRR(root *tnode) *tnode{
 	return newRoot
 }
 //LRローテーション
-func rotationLR(root *tnode) *tnode{
+func rotationLRInteger(root *tnodeInteger) *tnodeInteger{
 	//新たにrootになる
 	newRoot := root.leftNode.rightNode
 	//新たなleftNode
@@ -473,7 +443,7 @@ func rotationLR(root *tnode) *tnode{
 	return newRoot
 }
 //RLローテーション
-func rotationRL(root *tnode) *tnode{
+func rotationRLInteger(root *tnodeInteger) *tnodeInteger{
 	//新たにrootになる
 	newRoot := root.rightNode.leftNode
 	//新たなrightNode
@@ -508,7 +478,7 @@ func rotationRL(root *tnode) *tnode{
 
 //リバランスチェックし必要ならリバランス
 //戻り値　リバランスしたらfalse,新しいroot
-func rebalance(root *tnode) (bool,*tnode){
+func rebalanceInteger(root *tnodeInteger) (bool,*tnodeInteger){
 	newRoot :=root
 	def := root.leftDepth() - root.rightDepth()
 	if def > -2 && def < 2 {
@@ -522,19 +492,19 @@ func rebalance(root *tnode) (bool,*tnode){
 		//左が深い
 		if root.leftNode.leftDepth() >= root.leftNode.rightDepth() {
 			//LL回転
-			newRoot = rotationLL(root)
+			newRoot = rotationLLInteger(root)
 		} else {
 			//LR回転
-			newRoot = rotationLR(root)
+			newRoot = rotationLRInteger(root)
 		}
 	}else {
 		//右が深い
 		if root.rightNode.rightDepth() >= root.rightNode.leftDepth() {
 			//RR回転
-			newRoot = rotationRR(root)
+			newRoot = rotationRRInteger(root)
 		} else {
 			//RL回転
-			newRoot = rotationRL(root)
+			newRoot = rotationRLInteger(root)
 		}
 	}
 	
@@ -548,20 +518,20 @@ func rebalance(root *tnode) (bool,*tnode){
 	}
 	return false,newRoot
 }
-func (p *tnode) leftDepth() int{
+func (p *tnodeInteger) leftDepth() int{
 	if p.leftNode != nil {
 		return p.leftNode.depth() + 1
 	}
 	return 0
 }
-func (p *tnode) rightDepth() int{
+func (p *tnodeInteger) rightDepth() int{
 	if p.rightNode != nil {
 		return p.rightNode.depth() + 1
 	}
 	return 0
 }
 //木の深さを取得する
-func (p *tnode) depth() int{
+func (p *tnodeInteger) depth() int{
 	leftDepth := p.leftDepth()
 	rightDepth := p.rightDepth()
 	//深い方
@@ -572,16 +542,16 @@ func (p *tnode) depth() int{
 }
 
 //ノード内の状態を出力する
-func(p *tnode) Show() string {
+func(p *tnodeInteger) Show() string {
     return p.showPadding(0)
 }
-func(p *tnode) showPadding(pad int) string {
+func(p *tnodeInteger) showPadding(pad int) string {
     res := ""
     padding := strings.Repeat("-", pad)
     
     res += padding + "["
     for i:= 0;i < p.dataCount;i++ {
-        //res += strconv.Itoa(int(p.values[i].key)) + "("
+        res += strconv.Itoa(int(p.values[i].key)) + "("
         res += strconv.Itoa(len(p.values[i].rows))
         res += "),"
     }

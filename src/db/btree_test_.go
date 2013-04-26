@@ -222,7 +222,7 @@ func TestInsertValue(t *testing.T) {
     testNode.values[2].key = 25
     testNode.values[2].rows = []ROWNUM{3,5}
     
-    testNode.insertValue(1,nodeValue{key:10,rows:[]ROWNUM{30}},nil)
+    testNode.insertValue(1,nodeValueInteger{key:10,rows:[]ROWNUM{30}},nil)
     if testNode.dataCount != 4 {
         t.Error("illegal data count.")
     }
@@ -498,7 +498,7 @@ func TestCreateNewRoot(t *testing.T) {
     newRightNode.nodes[0] = cnode00
     newRightNode.nodes[1] = cnode01
     
-    newNodeValue := nodeValue{key:48,rows: []ROWNUM{100}}
+    newNodeValue := nodeValueInteger{key:48,rows: []ROWNUM{100}}
     
     newRoot := createNewRoot(newNodeValue,testNode,newRightNode)
     

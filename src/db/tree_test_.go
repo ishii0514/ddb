@@ -7,8 +7,8 @@ import (
 )
 
 func TestInsertValueT(t *testing.T) {
-	root := createTnode(5)
-	root.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+	root.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
 	if root.dataCount != 1 {
         t.Error("illegal dataCount 1")
     }
@@ -16,7 +16,7 @@ func TestInsertValueT(t *testing.T) {
         t.Error("illegal key 1")
     }
     
-    root.insertValue(1,nodeValue{5,[]ROWNUM{1}})
+    root.insertValue(1,nodeValueInteger{5,[]ROWNUM{1}})
 	if root.dataCount != 2 {
         t.Error("illegal dataCount 2")
     }
@@ -24,7 +24,7 @@ func TestInsertValueT(t *testing.T) {
         t.Error("illegal key 5")
     }
     
-    root.insertValue(1,nodeValue{3,[]ROWNUM{1}})
+    root.insertValue(1,nodeValueInteger{3,[]ROWNUM{1}})
 	if root.dataCount != 3 {
         t.Error("illegal dataCount 3")
     }
@@ -40,10 +40,10 @@ func TestInsertValueT(t *testing.T) {
 	
 }
 func TestInsertValueT2(t *testing.T) {
-	root := createTnode(5)
-	root.insertValue(0,nodeValue{5,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+	root.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
 	if root.dataCount != 3 {
         t.Error("illegal dataCount 3")
     }
@@ -59,12 +59,12 @@ func TestInsertValueT2(t *testing.T) {
 	
 }
 func TestDeleteValueT(t *testing.T) {
-	root := createTnode(5)
-	root.insertValue(0,nodeValue{9,[]ROWNUM{1}})
-	root.insertValue(0,nodeValue{7,[]ROWNUM{1}})
-	root.insertValue(0,nodeValue{5,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+	root.insertValue(0,nodeValueInteger{9,[]ROWNUM{1}})
+	root.insertValue(0,nodeValueInteger{7,[]ROWNUM{1}})
+	root.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
     if root.dataCount != 5 {
         t.Error("illegal dataCount 5")
     }
@@ -94,9 +94,9 @@ func TestDeleteValueT(t *testing.T) {
     }
 }
 func TestCanMergeChildNode(t *testing.T) {
-	root := createTnode(5)
-	left := createTnode(5)
-	right := createTnode(5)
+	root := createTnodeInteger(5)
+	left := createTnodeInteger(5)
+	right := createTnodeInteger(5)
 	if root.canMergeChildNode() != MERGE_TYPE_NONE {
         t.Error("illegal merge none")
     }
@@ -109,35 +109,35 @@ func TestCanMergeChildNode(t *testing.T) {
         t.Error("illegal merge both")
     }
     
-    root.insertValue(0,nodeValue{9,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{7,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{9,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{7,[]ROWNUM{1}})
     
-    left.insertValue(0,nodeValue{9,[]ROWNUM{1}})
-    left.insertValue(0,nodeValue{8,[]ROWNUM{1}})
+    left.insertValue(0,nodeValueInteger{9,[]ROWNUM{1}})
+    left.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
     if root.canMergeChildNode() != MERGE_TYPE_BOTH {
         t.Error("illegal merge both2")
     }
-    left.insertValue(0,nodeValue{7,[]ROWNUM{1}})
+    left.insertValue(0,nodeValueInteger{7,[]ROWNUM{1}})
     if root.canMergeChildNode() != MERGE_TYPE_RIGHT {
         t.Error("illegal merge right")
     }
     
-    right.insertValue(0,nodeValue{9,[]ROWNUM{1}})
-    right.insertValue(0,nodeValue{8,[]ROWNUM{1}})
+    right.insertValue(0,nodeValueInteger{9,[]ROWNUM{1}})
+    right.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
     if root.canMergeChildNode() != MERGE_TYPE_RIGHT {
         t.Error("illegal merge right2")
     }
-    right.insertValue(0,nodeValue{7,[]ROWNUM{1}})
+    right.insertValue(0,nodeValueInteger{7,[]ROWNUM{1}})
     if root.canMergeChildNode() != MERGE_TYPE_NONE {
         t.Error("illegal merge none")
     }
 }
 func TestMaxMinValue(t *testing.T) {
-	root := createTnode(5)
-	root.insertValue(0,nodeValue{5,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+	root.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
 	if root.maxValue() != 5 {
         t.Error("illegal maxvalue 5")
     }
@@ -146,11 +146,11 @@ func TestMaxMinValue(t *testing.T) {
     }
 }
 func TestPopNodeValue(t *testing.T) {
-	root := createTnode(5)
-	root.insertValue(0,nodeValue{7,[]ROWNUM{1}})
-	root.insertValue(0,nodeValue{5,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+	root.insertValue(0,nodeValueInteger{7,[]ROWNUM{1}})
+	root.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
     
     popValue := root.popNodeValue(1)
 	if  popValue.key != 3 {
@@ -173,12 +173,12 @@ func TestPopNodeValue(t *testing.T) {
 }
 
 func TestMergeFromLeftNode(t *testing.T) {
-	root := createTnode(5)
-    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    left := createTnode(5)
-    left.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    left.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+    root.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    left := createTnodeInteger(5)
+    left.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    left.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
     root.leftNode = left
     left.parentNode = root
     
@@ -208,12 +208,12 @@ func TestMergeFromLeftNode(t *testing.T) {
     
 }
 func TestMergeFromRightNode(t *testing.T) {
-	root := createTnode(5)
-    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    right := createTnode(5)
-    right.insertValue(0,nodeValue{20,[]ROWNUM{1}})
-    right.insertValue(0,nodeValue{10,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+    root.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    right := createTnodeInteger(5)
+    right.insertValue(0,nodeValueInteger{20,[]ROWNUM{1}})
+    right.insertValue(0,nodeValueInteger{10,[]ROWNUM{1}})
     root.rightNode = right
     right.parentNode = root
     
@@ -243,12 +243,12 @@ func TestMergeFromRightNode(t *testing.T) {
     
 }
 func TestMergeTail(t *testing.T) {
-	root := createTnode(5)
-    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    src := createTnode(5)
-    src.insertValue(0,nodeValue{20,[]ROWNUM{1}})
-    src.insertValue(0,nodeValue{10,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+    root.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    src := createTnodeInteger(5)
+    src.insertValue(0,nodeValueInteger{20,[]ROWNUM{1}})
+    src.insertValue(0,nodeValueInteger{10,[]ROWNUM{1}})
 
     
     root.mergeTail(src,1)
@@ -268,13 +268,13 @@ func TestMergeTail(t *testing.T) {
     
 }
 func TestMergeHead(t *testing.T) {
-	root := createTnode(5)
-    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    src := createTnode(5)
-    src.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    src.insertValue(0,nodeValue{2,[]ROWNUM{1}})
-    src.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+    root.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    src := createTnodeInteger(5)
+    src.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    src.insertValue(0,nodeValueInteger{2,[]ROWNUM{1}})
+    src.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
 
     
     root.mergeHead(src,1)
@@ -298,12 +298,12 @@ func TestMergeHead(t *testing.T) {
 }
 
 func TestClearT(t *testing.T) {
-	root := createTnode(5)
-    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{2,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+    root.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{2,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
 
     
     root.clear(2)
@@ -319,16 +319,16 @@ func TestClearT(t *testing.T) {
     }    
 }
 func TestRotationLL(t *testing.T) {
-	bl := createTnode(5)
-    bl.insertValue(0,nodeValue{1,[]ROWNUM{1}})
-	b := createTnode(5)
-    b.insertValue(0,nodeValue{2,[]ROWNUM{1}})
-    br := createTnode(5)
-    br.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    a := createTnode(5)
-    a.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    ar := createTnode(5)
-    ar.insertValue(0,nodeValue{5,[]ROWNUM{1}})
+	bl := createTnodeInteger(5)
+    bl.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
+	b := createTnodeInteger(5)
+    b.insertValue(0,nodeValueInteger{2,[]ROWNUM{1}})
+    br := createTnodeInteger(5)
+    br.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    a := createTnodeInteger(5)
+    a.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    ar := createTnodeInteger(5)
+    ar.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
     
     bl.parentNode = b
     b.leftNode = bl
@@ -342,7 +342,7 @@ func TestRotationLL(t *testing.T) {
     a.rightNode = ar
     ar.parentNode = a
     
-    newRoot := rotationLL(a)
+    newRoot := rotationLLInteger(a)
     
     //root
     if newRoot.values[0].key != 2 {
@@ -384,16 +384,16 @@ func TestRotationLL(t *testing.T) {
     }
 }
 func TestRotationRR(t *testing.T) {
-	br := createTnode(5)
-    br.insertValue(0,nodeValue{5,[]ROWNUM{1}})
-	b := createTnode(5)
-    b.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    bl := createTnode(5)
-    bl.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    a := createTnode(5)
-    a.insertValue(0,nodeValue{2,[]ROWNUM{1}})
-    al := createTnode(5)
-    al.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	br := createTnodeInteger(5)
+    br.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
+	b := createTnodeInteger(5)
+    b.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    bl := createTnodeInteger(5)
+    bl.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    a := createTnodeInteger(5)
+    a.insertValue(0,nodeValueInteger{2,[]ROWNUM{1}})
+    al := createTnodeInteger(5)
+    al.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
     
     bl.parentNode = b
     b.leftNode = bl
@@ -407,7 +407,7 @@ func TestRotationRR(t *testing.T) {
     a.leftNode = al
     al.parentNode = a
     
-    newRoot := rotationRR(a)
+    newRoot := rotationRRInteger(a)
     
     //root
     if newRoot.values[0].key != 4 {
@@ -449,20 +449,20 @@ func TestRotationRR(t *testing.T) {
     }
 }
 func TestRotationLR(t *testing.T) {
-	bl := createTnode(5)
-    bl.insertValue(0,nodeValue{1,[]ROWNUM{1}})
-	b := createTnode(5)
-    b.insertValue(0,nodeValue{2,[]ROWNUM{1}})
-    cl := createTnode(5)
-    cl.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    c := createTnode(5)
-    c.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    cr := createTnode(5)
-    cr.insertValue(0,nodeValue{5,[]ROWNUM{1}})
-    a := createTnode(5)
-    a.insertValue(0,nodeValue{6,[]ROWNUM{1}})
-    ar := createTnode(5)
-    ar.insertValue(0,nodeValue{7,[]ROWNUM{1}})
+	bl := createTnodeInteger(5)
+    bl.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
+	b := createTnodeInteger(5)
+    b.insertValue(0,nodeValueInteger{2,[]ROWNUM{1}})
+    cl := createTnodeInteger(5)
+    cl.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    c := createTnodeInteger(5)
+    c.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    cr := createTnodeInteger(5)
+    cr.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
+    a := createTnodeInteger(5)
+    a.insertValue(0,nodeValueInteger{6,[]ROWNUM{1}})
+    ar := createTnodeInteger(5)
+    ar.insertValue(0,nodeValueInteger{7,[]ROWNUM{1}})
     
     cl.parentNode = c
     c.leftNode = cl
@@ -482,7 +482,7 @@ func TestRotationLR(t *testing.T) {
     a.rightNode = ar
     ar.parentNode = a
     
-    newRoot := rotationLR(a)
+    newRoot := rotationLRInteger(a)
     
     //root
     if newRoot.values[0].key != 4 {
@@ -539,20 +539,20 @@ func TestRotationLR(t *testing.T) {
     }
 }
 func TestRotationRL(t *testing.T) {
-	br := createTnode(5)
-    br.insertValue(0,nodeValue{7,[]ROWNUM{1}})
-	b := createTnode(5)
-    b.insertValue(0,nodeValue{6,[]ROWNUM{1}})
-    cr := createTnode(5)
-    cr.insertValue(0,nodeValue{5,[]ROWNUM{1}})
-    c := createTnode(5)
-    c.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    cl := createTnode(5)
-    cl.insertValue(0,nodeValue{3,[]ROWNUM{1}})
-    a := createTnode(5)
-    a.insertValue(0,nodeValue{2,[]ROWNUM{1}})
-    al := createTnode(5)
-    al.insertValue(0,nodeValue{1,[]ROWNUM{1}})
+	br := createTnodeInteger(5)
+    br.insertValue(0,nodeValueInteger{7,[]ROWNUM{1}})
+	b := createTnodeInteger(5)
+    b.insertValue(0,nodeValueInteger{6,[]ROWNUM{1}})
+    cr := createTnodeInteger(5)
+    cr.insertValue(0,nodeValueInteger{5,[]ROWNUM{1}})
+    c := createTnodeInteger(5)
+    c.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    cl := createTnodeInteger(5)
+    cl.insertValue(0,nodeValueInteger{3,[]ROWNUM{1}})
+    a := createTnodeInteger(5)
+    a.insertValue(0,nodeValueInteger{2,[]ROWNUM{1}})
+    al := createTnodeInteger(5)
+    al.insertValue(0,nodeValueInteger{1,[]ROWNUM{1}})
    
     cr.parentNode = c
     c.rightNode = cr
@@ -573,7 +573,7 @@ func TestRotationRL(t *testing.T) {
     a.leftNode = al
     al.parentNode = a
     
-    newRoot := rotationRL(a)
+    newRoot := rotationRLInteger(a)
     
     //root
     if newRoot.values[0].key != 4 {
@@ -630,10 +630,10 @@ func TestRotationRL(t *testing.T) {
     }
 }
 func TestGetPositionT(t *testing.T) {
-	root := createTnode(3)
-	root.Insert(nodeValue{8,[]ROWNUM{1}})
-	root.Insert(nodeValue{7,[]ROWNUM{1}})
-	root.Insert(nodeValue{6,[]ROWNUM{1}})
+	root := createTnodeInteger(3)
+	root.Insert(nodeValueInteger{8,[]ROWNUM{1}})
+	root.Insert(nodeValueInteger{7,[]ROWNUM{1}})
+	root.Insert(nodeValueInteger{6,[]ROWNUM{1}})
 	
 	match,pos := root.getPosition(5)
 	if match != false {
@@ -644,12 +644,12 @@ func TestGetPositionT(t *testing.T) {
 	}
 }
 func TestDepth(t *testing.T) {
-	root := createTnode(5)
-    root.insertValue(0,nodeValue{8,[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{4,[]ROWNUM{1}})
-    right := createTnode(5)
-    right.insertValue(0,nodeValue{20,[]ROWNUM{1}})
-    right.insertValue(0,nodeValue{10,[]ROWNUM{1}})
+	root := createTnodeInteger(5)
+    root.insertValue(0,nodeValueInteger{8,[]ROWNUM{1}})
+    root.insertValue(0,nodeValueInteger{4,[]ROWNUM{1}})
+    right := createTnodeInteger(5)
+    right.insertValue(0,nodeValueInteger{20,[]ROWNUM{1}})
+    right.insertValue(0,nodeValueInteger{10,[]ROWNUM{1}})
     root.rightNode = right
     right.parentNode = root
         
@@ -659,10 +659,10 @@ func TestDepth(t *testing.T) {
 	if right.depth() != 0 {
 		t.Error("illegal right depth")
 	}
-	left := createTnode(5)
+	left := createTnodeInteger(5)
 	root.leftNode = left
     left.parentNode = root
-	leftleft := createTnode(5)
+	leftleft := createTnodeInteger(5)
 	left.leftNode = leftleft
     leftleft.parentNode = left
 	if root.depth() != 2 {
@@ -670,11 +670,11 @@ func TestDepth(t *testing.T) {
 	}
 }
 func TestShowT(t *testing.T) {
-	root := createTnode(3)
-	_,root = root.Insert(nodeValue{8,[]ROWNUM{1}})
-	_,root = root.Insert(nodeValue{7,[]ROWNUM{1}})
-	_,root = root.Insert(nodeValue{5,[]ROWNUM{1}})
-	_,root = root.Insert(nodeValue{6,[]ROWNUM{1}})
+	root := createTnodeInteger(3)
+	_,root = root.Insert(nodeValueInteger{8,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValueInteger{7,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValueInteger{5,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValueInteger{6,[]ROWNUM{1}})
 	
 	res := root.Show()
 	exp := "[6(1),7(1),8(1),]\n"
@@ -683,12 +683,12 @@ func TestShowT(t *testing.T) {
 		t.Error("illegal insert")
 	}
 	
-	_,root = root.Insert(nodeValue{4,[]ROWNUM{1}})
-	_,root = root.Insert(nodeValue{3,[]ROWNUM{1}})
-	_,root = root.Insert(nodeValue{2,[]ROWNUM{1}})
-	root.Insert(nodeValue{1,[]ROWNUM{1}})
-	root.Insert(nodeValue{0,[]ROWNUM{1}})
-	root.Insert(nodeValue{9,[]ROWNUM{1}})	
+	_,root = root.Insert(nodeValueInteger{4,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValueInteger{3,[]ROWNUM{1}})
+	_,root = root.Insert(nodeValueInteger{2,[]ROWNUM{1}})
+	root.Insert(nodeValueInteger{1,[]ROWNUM{1}})
+	root.Insert(nodeValueInteger{0,[]ROWNUM{1}})
+	root.Insert(nodeValueInteger{9,[]ROWNUM{1}})	
 	res = root.Show()
 	//print(res)
 	exp = "[3(1),4(1),5(1),]\n"
@@ -700,7 +700,7 @@ func TestShowT(t *testing.T) {
 	}
 }
 func TestTreeInsert(t *testing.T) {
-	tree := CreateTtree(3)
+	tree := CreateTtreeInteger(3)
 	tree.Insert(8)
 	tree.Insert(7)
 	tree.Insert(5)
@@ -731,7 +731,7 @@ func TestTreeInsert(t *testing.T) {
 }
 
 func TestTreeDeleteRRLotation(t *testing.T) {
-	tree := CreateTtree(3)
+	tree := CreateTtreeInteger(3)
 	tree.Insert(8)
 	tree.Insert(7)
 	tree.Insert(5)
@@ -766,7 +766,7 @@ func TestTreeDeleteRRLotation(t *testing.T) {
 	}
 }
 func TestTreeDeleteLRLotation(t *testing.T) {
-	tree := CreateTtree(3)
+	tree := CreateTtreeInteger(3)
 	tree.Insert(9)
 	tree.Insert(10)
 	tree.Insert(11)

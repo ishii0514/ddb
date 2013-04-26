@@ -6,6 +6,15 @@ package db
 import (
 
 )
+
+//カラム型を表す定数
+type ColumnType int
+const (
+	COLUMN_TYPE_INTEGER ColumnType = iota
+	COLUMN_TYPE_STRING  ColumnType = iota
+)
+
+
 //TODO Search
 
 //カラムインターフェース

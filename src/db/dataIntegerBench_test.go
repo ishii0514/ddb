@@ -42,7 +42,7 @@ func createDataBtree(datanumber int) BtreeInteger {
 }
 //指定したデータ件数のTtreeを生成
 func createDataTtree(datanumber int) TtreeInteger {
-    data1  := CreateTtree(TNODE_CNT)
+    data1  := CreateTtreeInteger(TNODE_CNT)
     for _, i := range randumValues(datanumber,datanumber) {
         data1.Insert(Integer(i))
     }
