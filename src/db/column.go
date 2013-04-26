@@ -10,8 +10,8 @@ import (
 //カラム型を表す定数
 type ColumnType int
 const (
-	COLUMN_TYPE_INTEGER ColumnType = iota
-	COLUMN_TYPE_STRING  ColumnType = iota
+  COLUMN_TYPE_INTEGER ColumnType = iota
+  COLUMN_TYPE_STRING  ColumnType = iota
 )
 
 
@@ -19,20 +19,20 @@ const (
 
 //カラムインターフェース
 type Column interface {
-	Type() ColumnType
-	Name() string
-	DataCount() ROWNUM
-	Search(string) []ROWNUM
-	Insert(string) ROWNUM
-	Delete(string) ROWNUM
+  Type() ColumnType
+  Name() string
+  DataCount() ROWNUM
+  Search(string) []ROWNUM
+  Insert(string) ROWNUM
+  Delete(string) ROWNUM
 }
 
 //カラムの生成
 func createColumn(columnName string, columnType ColumnType) Column{
-	switch {
+  switch {
     case columnType == COLUMN_TYPE_INTEGER:
-    	newColumn := ColumnInteger{name : columnName,data:new(ArrayInteger)}
-    	return &newColumn
+      newColumn := ColumnInteger{name : columnName,data:new(ArrayInteger)}
+      return &newColumn
     }
     return nil
 }
@@ -69,12 +69,12 @@ func (p *ColumnInteger) Get(row ROWNUM) (Integer,error) {
 
 //指定した値の行リストを返す
 func (p *ColumnInteger) Search(searchValue string) []ROWNUM {
-	//型チェック
-	v,err := StringtoInteger(searchValue)
-	if err == nil {
-		return p.data.Search(v)
+  //型チェック
+  v,err := StringtoInteger(searchValue)
+  if err == nil {
+    return p.data.Search(v)
     }
-	return []ROWNUM{}
+  return []ROWNUM{}
 }
 
 /**
@@ -82,22 +82,22 @@ func (p *ColumnInteger) Search(searchValue string) []ROWNUM {
  * 不正なデータの場合、INVALID_VALUE_INTEGERを挿入する。
  */
 func (p *ColumnInteger) Insert(data string)  ROWNUM{
-	//型チェックしてインサート
-	return p.data.Insert(convertToInteger(data))
+  //型チェックしてインサート
+  return p.data.Insert(convertToInteger(data))
 }
 
 
 // 文字列入力に対して型チェックとコンバートを行う
 // Integer型に変換できない場合、INVALID_VALUE_INTEGERを返す
 func convertToInteger(data string) Integer{
-	//無効値
-	if data == INVALID_VALUE {
-		return INVALID_VALUE_INTEGER
-	}
-	//型変換
-	v,err := StringtoInteger(data)
-	if err == nil {
-		return v
+  //無効値
+  if data == INVALID_VALUE {
+    return INVALID_VALUE_INTEGER
+  }
+  //型変換
+  v,err := StringtoInteger(data)
+  if err == nil {
+    return v
     }
     //変換に失敗したら無効値
     return INVALID_VALUE_INTEGER
@@ -106,10 +106,10 @@ func convertToInteger(data string) Integer{
  * データ削除
  */
 func (p *ColumnInteger) Delete(data string)  ROWNUM{
-	//型チェック
-	v,err := StringtoInteger(data)
-	if err == nil {
-		return p.data.Delete(v)
+  //型チェック
+  v,err := StringtoInteger(data)
+  if err == nil {
+    return p.data.Delete(v)
     }
     return 0
 }

@@ -5,14 +5,13 @@ import (
 )
 
 type nodeValue struct{
-	key Type
-	//key interface{}
-	rows []ROWNUM
+  key Type
+  rows []ROWNUM
 }
 
 func(p* nodeValue)clear(){
-	p.key= nil
-	p.rows =nil
+  p.key= nil
+  p.rows =nil
 }
 
 type nodeValueInteger struct{

@@ -5,10 +5,10 @@ import (
 
 //エラー構造体
 type DbError struct {
-    Message string
+  Message string
 }
 func (e *DbError) Error() string {
-    return e.Message
+  return e.Message
 }
 
 

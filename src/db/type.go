@@ -1,11 +1,12 @@
 package db
 
 import (
-	"strconv"
+  "strconv"
 )
 //データ型インターフェース
 type Type interface {
-	comp(Type) int
+  comp(Type) int
+  print() string
 }
 
 //行を表す型
@@ -22,23 +23,28 @@ type Varchar string
  * p.comp(v) < 0  : p < v
  */
 func(p Integer) comp(value Type) int{
-	return (int)(p - value.(Integer))
+  return (int)(p - value.(Integer))
+}
+func(p Integer) print() string{
+  return strconv.Itoa(int(p))
 }
 
-
 func(p Varchar) comp(value Type) int{
-	if p == value.(Varchar) {
-		return 0
-	} else if p > value.(Varchar) {
-		return 1
-	}
-	return -1
+  if p == value.(Varchar) {
+    return 0
+  } else if p > value.(Varchar) {
+    return 1
+  }
+  return -1
+}
+func(p Varchar) print() string{
+  return string(p)
 }
 
 //文字列をInteger型に変換する
 func StringtoInteger(value string) (Integer,error){
-	v,err := strconv.Atoi(value)
-	return Integer(v),err
+  v,err := strconv.Atoi(value)
+  return Integer(v),err
 }
 
 //Integer型の無効値　とりあえず0
