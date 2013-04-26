@@ -404,6 +404,60 @@ func (p *tnode) clear(start int){
   }
   p.dataCount =start
 }
+func (p *tnode) leftDepth() int{
+  if p.leftNode != nil {
+    return p.leftNode.depth() + 1
+  }
+  return 0
+}
+func (p *tnode) rightDepth() int{
+  if p.rightNode != nil {
+    return p.rightNode.depth() + 1
+  }
+  return 0
+}
+//木の深さを取得する
+func (p *tnode) depth() int{
+  leftDepth := p.leftDepth()
+  rightDepth := p.rightDepth()
+  //深い方
+  if leftDepth > rightDepth {
+    return leftDepth
+  }
+  return rightDepth
+}
+
+//ノード内の状態を出力する
+func(p *tnode) Show() string {
+    return p.showPadding(0)
+}
+func(p *tnode) showPadding(pad int) string {
+    res := ""
+    padding := strings.Repeat("-", pad)
+
+    res += padding + "["
+    for i:= 0;i < p.dataCount;i++ {
+        res += toString(p.values[i].key) + "("
+        res += strconv.Itoa(len(p.values[i].rows))
+        res += "),"
+    }
+    res += "]\n"
+    if p.leftNode !=nil {
+      res += "l:" + p.leftNode.showPadding(pad+1)
+    }
+    if p.rightNode !=nil {
+      res += "r:" + p.rightNode.showPadding(pad+1)
+    }
+    return res
+}
+func toString(value interface{}) string {
+    res := ""
+    switch val := value.(type){
+        case Integer: res = strconv.Itoa(int(val))
+        case Varchar: res =  string(val)
+    }
+    return res
+}
 
 //LLローテーション
 func rotationLL(root *tnode) *tnode{
@@ -551,50 +605,4 @@ func rebalance(root *tnode) (bool,*tnode){
     }
   }
   return false,newRoot
-}
-func (p *tnode) leftDepth() int{
-  if p.leftNode != nil {
-    return p.leftNode.depth() + 1
-  }
-  return 0
-}
-func (p *tnode) rightDepth() int{
-  if p.rightNode != nil {
-    return p.rightNode.depth() + 1
-  }
-  return 0
-}
-//木の深さを取得する
-func (p *tnode) depth() int{
-  leftDepth := p.leftDepth()
-  rightDepth := p.rightDepth()
-  //深い方
-  if leftDepth > rightDepth {
-    return leftDepth
-  }
-  return rightDepth
-}
-
-//ノード内の状態を出力する
-func(p *tnode) Show() string {
-    return p.showPadding(0)
-}
-func(p *tnode) showPadding(pad int) string {
-    res := ""
-    padding := strings.Repeat("-", pad)
-
-    res += padding + "["
-    for i:= 0;i < p.dataCount;i++ {
-        res += p.values[i].key.print() + "("
-        res += strconv.Itoa(len(p.values[i].rows))
-        res += "),"
-    }
-    res += "]\n"
-    if p.leftNode !=nil {
-      res += "l:" + p.leftNode.showPadding(pad+1)
-    }
-    if p.rightNode !=nil {
-      res += "r:" + p.rightNode.showPadding(pad+1)
-    }
-    return res
 }

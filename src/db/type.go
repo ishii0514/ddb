@@ -6,7 +6,6 @@ import (
 //データ型インターフェース
 type Type interface {
   comp(Type) int
-  print() string
 }
 
 //行を表す型
@@ -25,9 +24,6 @@ type Varchar string
 func(p Integer) comp(value Type) int{
   return (int)(p - value.(Integer))
 }
-func(p Integer) print() string{
-  return strconv.Itoa(int(p))
-}
 
 func(p Varchar) comp(value Type) int{
   if p == value.(Varchar) {
@@ -36,9 +32,6 @@ func(p Varchar) comp(value Type) int{
     return 1
   }
   return -1
-}
-func(p Varchar) print() string{
-  return string(p)
 }
 
 //文字列をInteger型に変換する
