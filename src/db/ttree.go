@@ -21,24 +21,6 @@ const (
 
 )
 
-func binarySearch(values []nodeValue,searchValue Type,head int,tail int) (bool,int){
-    //再帰なし
-    for ;; {
-      if head > tail {
-        return false,head
-      }
-      pivot := (head+tail)/2
-      if values[pivot].key.comp(searchValue) == 0 {
-        return true,pivot
-      } else if values[pivot].key.comp(searchValue) > 0 {
-        tail = pivot-1
-      } else {
-         head = pivot+1
-      }
-    }
-    return false,head
-}
-
 //Tteeデータ構造
 type Ttree struct{
     rootNode *tnode
@@ -114,11 +96,11 @@ func(p *tnode) Search(searchValue Type) []ROWNUM{
   //再帰なし版
   node := p
   for ; ; {
-    if node.leftNode != nil && searchValue.comp(node.minValue()) < 0  {
+    if node.leftNode != nil && searchValue.comp(node.values[0].key) < 0  {
       node = node.leftNode
       continue
     }
-    if node.rightNode != nil && searchValue.comp(node.maxValue()) >0 {
+    if node.rightNode != nil && searchValue.comp(node.values[node.dataCount-1].key) >0 {
       node = node.rightNode
       continue
     }
@@ -130,18 +112,20 @@ func(p *tnode) Search(searchValue Type) []ROWNUM{
   }
   return []ROWNUM{}
 }
+
+
 //Tnodeインサート
 //戻り値　ノード追加発生,新たなルートノード
 //TODO リファクタ
 func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
-  if p.leftNode != nil && insertNodeValue.key.comp(p.minValue())<0  {
+  if p.leftNode != nil && insertNodeValue.key.comp(p.values[0].key)<0  {
     add,_ := p.leftNode.Insert(insertNodeValue)
     if add {
       return rebalance(p)
     }
     return false,p
   }
-  if p.rightNode != nil && insertNodeValue.key.comp(p.maxValue())>0 {
+  if p.rightNode != nil && insertNodeValue.key.comp(p.values[p.dataCount-1].key)>0 {
     add,_ := p.rightNode.Insert(insertNodeValue)
     if add {
       return rebalance(p)
@@ -192,12 +176,12 @@ func(p *tnode) Insert(insertNodeValue nodeValue) (bool,*tnode) {
 //Tnode削除
 //TODO test
 func(p *tnode) Delete(deleteValue Type) (ROWNUM,bool,*tnode) {
-  if p.leftNode != nil && deleteValue.comp(p.minValue())<0  {
+  if p.leftNode != nil && deleteValue.comp(p.values[0].key)<0  {
     deleteNum,del,_ := p.leftNode.Delete(deleteValue)
     delflg,newRoot := p.doAfterChildDelete(LEFT,del)
     return deleteNum,delflg,newRoot
   }
-  if p.rightNode != nil && deleteValue.comp(p.maxValue())>0 {
+  if p.rightNode != nil && deleteValue.comp(p.values[p.dataCount-1].key)>0 {
     deleteNum,del,_ := p.rightNode.Delete(deleteValue)
     delflg,newRoot := p.doAfterChildDelete(RIGHT,del)
     return deleteNum,delflg,newRoot
@@ -300,12 +284,7 @@ func(p *tnode) canMergeChildNode() MergeType{
   }
   return canMerge
 }
-func(p *tnode) maxValue() Type{
-  return p.values[p.dataCount-1].key
-}
-func(p *tnode) minValue() Type{
-  return p.values[0].key
-}
+
 //指定ポジションをpop
 func(p *tnode) popNodeValue(pos int) nodeValue{
   minNodeValue := p.values[pos]

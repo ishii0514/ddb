@@ -67,7 +67,6 @@ var tests =[]testing.InternalTest{
     {"db.TestTreeDeleteRRLotationInteger",db.TestTreeDeleteRRLotationInteger},
     {"db.TestTreeDeleteLRLotationInteger",db.TestTreeDeleteLRLotationInteger},
     {"db.TestDeleteValueT",db.TestDeleteValueT},
-    {"db.TestMaxMinValue",db.TestMaxMinValue},
     {"db.TestPopNodeValue",db.TestPopNodeValue},
     {"db.TestMergeFromLeftNode",db.TestMergeFromLeftNode},
     {"db.TestMergeFromRightNode",db.TestMergeFromRightNode},

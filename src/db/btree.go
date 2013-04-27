@@ -96,25 +96,6 @@ func createNode(t int) *node{
 }
 
 
-func binarySearchInteger(values []nodeValueInteger,searchValue Integer,head int,tail int) (bool,int){
-    //再帰なし
-    for ;; {
-      if head > tail {
-        return false,head
-      }
-      pivot := (head+tail)/2
-      if values[pivot].key == searchValue {
-        return true,pivot
-      } else if values[pivot].key > searchValue{
-        tail = pivot-1
-      } else {
-         head = pivot+1
-      }
-    }
-    return false,head
-}
-
-
 //探索
 func(p *node) Search(searchValue Integer) []ROWNUM{
 	//再帰なし版

@@ -24,3 +24,7 @@ type nodeValueString struct{
     key Varchar
     rows []ROWNUM
 }
+type nodeValueInt struct{
+  key  int
+  rows []ROWNUM
+}

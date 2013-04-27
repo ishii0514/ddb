@@ -133,18 +133,8 @@ func TestCanMergeChildNode(t *testing.T) {
         t.Error("illegal merge none")
     }
 }
-func TestMaxMinValue(t *testing.T) {
-  root := createTnode(5)
-  root.insertValue(0,nodeValue{Integer(5),[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{Integer(3),[]ROWNUM{1}})
-    root.insertValue(0,nodeValue{Integer(1),[]ROWNUM{1}})
-  if root.maxValue() != Integer(5) {
-        t.Error("illegal maxvalue 5")
-    }
-    if root.minValue() != Integer(1) {
-        t.Error("illegal minvalue 1")
-    }
-}
+
+
 func TestPopNodeValue(t *testing.T) {
   root := createTnode(5)
   root.insertValue(0,nodeValue{Integer(7),[]ROWNUM{1}})
